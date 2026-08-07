@@ -409,6 +409,23 @@ if (fgets(stri, sizeof(stri), fpi[1]) != NULL) {
 // //   timing_array_index = timing_array_index + 1;  
 // // }
 
+// --- TXDBG: one-shot diagnostic written to a mounted file (survives container teardown) ---
+static FILE *txdbgf = NULL;
+static long txdbg_calls = 0;
+txdbg_calls++;
+if (txdbg_calls == 1) {
+  txdbgf = fopen("/opt/tt-ran/tt/logs/txdbg.txt", "w");
+  if (txdbgf) {
+    fprintf(txdbgf, "TXDBG txAddInput: taplen=%d dd=%lu ploss=%.4f noise=%.6f Dopp_inc=%.6g "
+                    "taps_r=[%.3f %.3f %.3f] taps_i=[%.3f %.3f %.3f] nbSamples=%d\n",
+            taplen, (unsigned long)dd, pathLossLinear, noise_per_sample,
+            (double)channelDesc->Doppler_phase_inc,
+            mchannelModelr[0], mchannelModelr[1], mchannelModelr[2],
+            mchannelModeli[0], mchannelModeli[1], mchannelModeli[2], nbSamples);
+    fflush(txdbgf);
+  }
+}
+
 for (int i=0; i<nbSamples; i++) {
 
 struct complex16 *out_ptr=after_channel_sig+i;
@@ -419,11 +436,12 @@ struct complexd rx_tmp= {0};
 for (int l = 0; l<taplen; l++) {
 
 
-const int idx = ((i - l -dd) + CirSize) % CirSize;
+const long j = (long)i - (long)l - (long)dd;
+if (j < 0) continue;   // sample is before the start of this block: no history, skip this tap
 
 
 
-const struct complex16 tx16 = input_sig[idx];
+const struct complex16 tx16 = input_sig[j];
 // // rx_tmp.r += tx16.r * channelModel[l].r - tx16.i * channelModel[l].i;
 // // rx_tmp.i += tx16.i * channelModel[l].r + tx16.r * channelModel[l].i;
 rx_tmp.r += tx16.r * mchannelModelr[l] - tx16.i * mchannelModeli[l];
@@ -450,6 +468,26 @@ channelDesc->Doppler_phase_cur[rxAnt] += channelDesc->Doppler_phase_inc;
 out_ptr->r = lround(rx_tmp.r*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0));
 out_ptr->i = lround(rx_tmp.i*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0));
  out_ptr++;
+}
+
+// --- TXDBG: on signal-bearing blocks, is the output identical to the input? ---
+static int txdbg_sig_logged = 0;
+if (txdbgf && txdbg_sig_logged < 12) {
+  long ein = 0, ediff = 0, maxabs = 0;
+  for (int k = 0; k < nbSamples; k++) {
+    ein   += (long)input_sig[k].r*input_sig[k].r + (long)input_sig[k].i*input_sig[k].i;
+    int dr = after_channel_sig[k].r - input_sig[k].r;
+    int di = after_channel_sig[k].i - input_sig[k].i;
+    ediff += (long)dr*dr + (long)di*di;
+    long a = after_channel_sig[k].r; if (a < 0) a = -a; if (a > maxabs) maxabs = a;
+    long b = after_channel_sig[k].i; if (b < 0) b = -b; if (b > maxabs) maxabs = b;
+  }
+  if (ein > 0) {   // only log blocks where the UE is actually transmitting
+    txdbg_sig_logged++;
+    fprintf(txdbgf, "TXDBG sig[%d] call=%ld: in=%ld |out-in|^2=%ld out_maxabs=%ld\n",
+            txdbg_sig_logged, txdbg_calls, ein, ediff, maxabs);
+    fflush(txdbgf);
+  }
 }
 
 }

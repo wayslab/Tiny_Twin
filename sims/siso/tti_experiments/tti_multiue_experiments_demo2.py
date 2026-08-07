@@ -307,7 +307,7 @@ def autoUE():
     for ktap in range(start_tap,end_tap+1,4):
         for kk in range(start_ue,end_ue+1,3):
             os.makedirs(f"./plot/ue{kk}_{ktap}", exist_ok=True)
-            os.system("cp /home/wcsng5g/tinytwin-oai/channel/channel_clean_demo2.txt /home/wcsng5g/tinytwin-oai/channel/channel_clean.txt ")
+            os.system("cp /home/wcsng5g/tinytwin-oai/channel/channel_clean_demo2.txt /home/wcsng5g/tinytwin-oai/channel/channel_real.txt ")
             time.sleep(10)
             os.system("docker compose -f ../../oai-cn/docker-compose.yaml up -d")
             os.system("docker compose -f /home/wcsng5g/tinytwin-oai/sims/siso/tti_experiments/edgeric-v2/muApp3/docker/prometheus/docker-compose.yml up -d")

@@ -1,4 +1,5 @@
-FROM ubuntu:24.04
+ARG OS_VERSION=22.04
+FROM ubuntu:${OS_VERSION}
 # FROM srsran/gnb
 #FROM uhd:latest
 
@@ -10,7 +11,7 @@ RUN apt-get -y upgrade
 RUN apt-get install -y libfftw3-dev \
 	libmbedtls-dev \
 	libsctp-dev \
-	qt5-default \
+	qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
 	libconfig++-dev \
 	net-tools \
 	nano \
@@ -39,13 +40,15 @@ RUN apt-get install -y libgtest-dev
 
 RUN pip3 install --upgrade pip
 RUN pip3 install prometheus_client
+# gnuradio installs sympy/mpmath via apt (distutils); reinstall under pip so
+# torchvision's dependency resolution can manage them without a failed uninstall
+RUN pip3 install --ignore-installed sympy mpmath
 RUN pip3 install gym pandas torchvision tensorboard redis debugpy ray gymnasium dm_tree pyarrow typer scikit-image plotly
 RUN pip3 install hydra-core==1.1.0
 RUN pip3 uninstall -y protobuf
-# Install protobuf version 3.20.*
-RUN pip3 install protobuf 
-
-#==3.20.*
+# Pin protobuf to 3.20.x: the checked-in *_pb2.py files were generated with an
+# older protoc and fail ("Descriptors cannot be created directly") on protobuf >= 4.
+RUN pip3 install 'protobuf==3.20.*'
 
 ## copy srsran and Pytorch
 RUN mkdir -p /home/EdgeRIC
