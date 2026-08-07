@@ -663,8 +663,8 @@ int main( int argc, char **argv ) {
   // fpr = fopen("../../../channel/real_random_10tap.txt", "r");
   // fpi = fopen("../../../channel/real_random_10tap.txt", "r");
   for (int i=0;i<50;i++){
-    fpr[i] = fopen("../../../channel/channel_clean.txt", "r");
-    fpi[i] = fopen("../../../channel/channel_clean.txt", "r");
+    fpr[i] = fopen("../../../channel/channel_real.txt", "r");   // real taps
+    fpi[i] = fopen("../../../channel/channel_imag.txt", "r");    // imag taps (separate file)
   }
   // fplog = fopen("../../../logs/timing.txt", "w"); // file the data from the timing array is written to
   // fplog2 = fopen("../../../logs/mac.txt", "w"); // when did a TTI start 

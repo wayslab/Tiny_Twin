@@ -755,7 +755,9 @@ static void _nr_rx_sdu(const module_id_t gnb_mod_idP,
         fprintf(fpsnr, "TTI Index: %d\n", tti_counter);
         // fprintf(fpsnr, "UL CQI: %04x RNTI %d\n", UE->rnti, ul_cqi);  
         fprintf(fpsnr, "UL CQI: %d RNTI: %04x\n", ul_cqi, UE->rnti);
-        
+        fprintf(fpsnr, "UL PUSCH_SNR: %f RNTI: %04x\n",
+              UE_scheduling_control->pusch_snrx10 / 10.0,
+              UE->rnti);
     }
 
       if (UE_scheduling_control->tpc0 > 1)
@@ -1918,6 +1920,7 @@ static void pf_ul(module_id_t module_id,
     if (mcslog){
         fprintf(fpsnr, "TTI Index: %d\n", tti_counter);
         fprintf(fpsnr, "UL MCS: %d RNTI: %04x\n", sched_pusch->mcs, UE->rnti);
+        fprintf(fpsnr, "UL BLER: %f RNTI: %04x\n", sched_ctrl->ul_bler_stats.bler, UE->rnti);
         // fprintf(fpsnr, "UL MCS: %d\n", sched_pusch->mcs);  
     }
 

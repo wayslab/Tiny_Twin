@@ -1,3 +1,14 @@
+"""
+# if you modified any c code, make sure to build
+docker compose -f ../../oai-cn/docker-compose.yaml up -d
+ docker compose up -d tt-gnb
+docker exec tt-gnb ./build.sh
+# change noise power in 
+Tiny_Twin/ci-scripts/conf_files/nrue.uicc.conf
+
+Run with parameters #UE #taps
+python3 tti_multiue_experiments_demo1.py 1 2
+"""
 import sys
 import os
 import time
@@ -19,6 +30,7 @@ services:
         image: tt-gnb:v2
         container_name: tt-gnb
         privileged: true
+        cpuset: "5,6,7,8"   # pin gNB to dedicated Cortex-X925 performance cores (3900 MHz)
         cap_drop:
             - ALL
         cap_add:
@@ -269,6 +281,7 @@ def create_docker(i, n_tap):
         image: tt-nrue:v2
         container_name: tt-ue{i-160}
         privileged: true
+        cpuset: "9,15,16,17,18,19"   # pin UE(s) to remaining X925 performance cores (disjoint from gNB)
         cap_drop:
             - ALL
         cap_add:
@@ -306,11 +319,11 @@ def autoUE():
     for ktap in range(start_tap,end_tap+1,4):
         for kk in range(start_ue,end_ue+1,3):
             os.makedirs(f"./plot/ue{kk}_{ktap}", exist_ok=True)
-            os.system("cp /home/wcsng5g/tinytwin-oai/channel/channel_clean_demo1.txt /home/wcsng5g/tinytwin-oai/channel/channel_clean.txt ")
+            os.system("cp ../../../channel/channel_real_demo1.txt ../../../channel/channel_real.txt ")
             time.sleep(10)
             os.system("docker compose -f ../../oai-cn/docker-compose.yaml up -d")
-            os.system("docker compose -f /home/wcsng5g/tinytwin-oai/sims/siso/tti_experiments/edgeric-v2/muApp3/docker/prometheus/docker-compose.yml up -d")
-            os.system("docker compose -f /home/wcsng5g/tinytwin-oai/sims/siso/tti_experiments/edgeric-v2/muApp3/docker/grafana/docker-compose.yml up -d")
+            os.system("docker compose -f edgeric-v2/muApp3/docker/prometheus/docker-compose.yml up -d")
+            os.system("docker compose -f edgeric-v2/muApp3/docker/grafana/docker-compose.yml up -d")
             while flag == 0:
                 time.sleep(2)
             
@@ -360,15 +373,15 @@ def autoUE():
             time.sleep(5)
             os.system(f"""top -bn6 > ./plot/ue{kk}_{ktap}/iperf_cpumem.txt """)
             #test
-            time.sleep(360)
+            time.sleep(60) # changed from 360
             print("kill gnb")
             os.system(f"docker exec tt-gnb chmod +x stop.sh ")
             os.system(f"docker exec -d tt-gnb ./stop.sh ")
             time.sleep(5)
 
             os.system(f"docker compose down")
-            os.system("docker compose -f /home/wcsng5g/tinytwin-oai/sims/siso/tti_experiments/edgeric-v2/muApp3/docker/grafana/docker-compose.yml down")
-            os.system("docker compose -f /home/wcsng5g/tinytwin-oai/sims/siso/tti_experiments/edgeric-v2/muApp3/docker/prometheus/docker-compose.yml down")
+            os.system("docker compose -f edgeric-v2/muApp3/docker/grafana/docker-compose.yml down")
+            os.system("docker compose -f edgeric-v2/muApp3/docker/prometheus/docker-compose.yml down")
             os.system("docker compose -f ../../oai-cn/docker-compose.yaml down")
 
 

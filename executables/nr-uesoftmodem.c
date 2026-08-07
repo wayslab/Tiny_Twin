@@ -283,11 +283,11 @@ void init_openair0()
   // fpr = fopen("../../../channel/real_random_10tap.txt", "r");
   // fpi = fopen("../../../channel/real_random_10tap.txt", "r");
 
-  fpr[0] = fopen("../../../channel/channel_clean.txt", "r");
-  fpi[0] = fopen("../../../channel/channel_clean.txt", "r");
+  fpr[0] = fopen("../../../channel/channel_real.txt", "r");   // real taps
+  fpi[0] = fopen("../../../channel/channel_imag.txt", "r");    // imag taps (separate file)
 
-  fpr[1] = fopen("../../../channel/channel_clean.txt", "r");
-  fpi[1] = fopen("../../../channel/channel_clean.txt", "r");
+  fpr[1] = fopen("../../../channel/channel_real.txt", "r");   // real taps
+  fpi[1] = fopen("../../../channel/channel_imag.txt", "r");    // imag taps (separate file)
 
   // if (snrlog){
     // fpsnr = fopen("../../../logs/snr.txt", "w"); // file the SNR is written to
