@@ -9,7 +9,7 @@ services:
             - NET_ADMIN  # for interface bringup
             - NET_RAW    # for ping
         volumes:
-            - ../../../tinytwin-oai:/opt/tt-ran/tt:rw
+            - ../..:/opt/tt-ran/tt:rw
             - ../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf:/opt/tt-ran/etc/gnb.conf
             - ../../channel/channel.txt:/opt/tt-ran/tt/channel/channel_gradual.txt
             - ../../logs_gnb:/opt/tt-ran/etc/logs
@@ -43,7 +43,7 @@ services:
             - NET_ADMIN  # for interface bringup
             - NET_RAW    # for ping
         volumes:
-            - ../../../tinytwin-oai:/opt/tt-ran/tt:rw   
+            - ../..:/opt/tt-ran/tt:rw
             # - ../../channel/channel.txt:/opt/tt-ran/channel/channel_gradual.txt
             - ../../ci-scripts/conf_files/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
             - ../../logs_ue:/opt/oai-nr-ue/etc/logs
@@ -76,7 +76,7 @@ services:
             - NET_ADMIN  # for interface bringup
             - NET_RAW    # for ping
         volumes:
-            - ../../../tinytwin-oai:/opt/tt-ran/tt
+            - ../..:/opt/tt-ran/tt
             # - ../../channel/channel.txt:/opt/tt-ran/channel/channel_gradual.txt
             - ../../ci-scripts/conf_files/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
             - ../../logs_ue:/opt/oai-nr-ue/etc/logs
@@ -109,7 +109,7 @@ services:
             - NET_ADMIN  # for interface bringup
             - NET_RAW    # for ping
         volumes:
-            - ../../../tinytwin-oai:/opt/tt-ran/tt:rw
+            - ../..:/opt/tt-ran/tt:rw
             # - ../../channel/channel.txt:/opt/tt-ran/channel/channel_gradual.txt
             - ../../ci-scripts/conf_files/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
             - ../../logs_ue:/opt/oai-nr-ue/etc/logs
@@ -236,7 +236,7 @@ networks:
     public_net:
         driver: bridge
         external: true
-        name: tt-public-net
+        name: oai-cn5g-public-net
         # ipam:
         #     config:
         #         - subnet: 192.168.70.128/26
