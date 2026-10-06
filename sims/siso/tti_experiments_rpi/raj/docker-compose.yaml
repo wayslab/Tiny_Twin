@@ -1,0 +1,125 @@
+
+services:
+    tt-gnb:
+        image: tt-gnb:v2
+        container_name: tt-gnb
+        privileged: true
+        cpuset: "5,6,7,8"   # pin gNB to dedicated Cortex-X925 performance cores (3900 MHz)
+        cap_drop:
+            - ALL
+        cap_add:
+            - NET_ADMIN  # for interface bringup
+            - NET_RAW    # for ping
+        volumes:
+            - /home/ways_lab/repos/tinytwin-oai:/opt/tt-ran/tt:rw
+            - /home/ways_lab/repos/Tiny_Twin/targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf:/opt/tt-ran/etc/gnb.conf
+            # bind the real/imag tap files the rfsim C actually opens
+            # (channel/ is the tinytwin-oai -> Tiny_Twin symlink); these are
+            # (re)written each run by stage_channel() from the chosen raj_chan file
+            - /home/ways_lab/repos/Tiny_Twin/channel/channel_real.txt:/opt/tt-ran/tt/channel/channel_real.txt
+            - /home/ways_lab/repos/Tiny_Twin/channel/channel_imag.txt:/opt/tt-ran/tt/channel/channel_imag.txt
+            - /home/ways_lab/repos/Tiny_Twin/logs_gnb:/opt/tt-ran/etc/logs
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/run.sh:/opt/tt-ran/run.sh
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/stop.sh:/opt/tt-ran/stop.sh
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/build.sh:/opt/tt-ran/build.sh
+        # environment:
+        #     USE_ADDITIONAL_OPTIONS: --rfsim -E --sa --rfsimulator.options chanmod -T 10 -O /opt/oai-gnb/etc/gnb.conf
+        #     ASAN_OPTIONS: detect_leaks=0
+        # entrypoint: >
+        #     /bin/bash -c "pwd && cd tt/cmake_targets/ran_build/build/ &&
+        #     ./nr-softmodem -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf --rfsim -E --sa  --rfsimulator.options chanmod -TP 10 --TTI 1 --SNR 1
+        #     exec /bin/bash"
+        entrypoint: /bin/bash
+        stdin_open: true  # docker run -i
+        tty: true        # docker run -t
+        # depends_on:
+        #     - oai-ext-dn
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.140
+        # healthcheck:
+        #     test: /bin/bash -c "pgrep nr-softmodem"
+        #     interval: 10s
+        #     timeout: 5s
+        #     retries: 5
+
+
+
+    tt-nrue1:
+        image: tt-nrue:v2
+        container_name: tt-ue1
+        privileged: true
+        cpuset: "9,15,16,17,18,19"   # pin UE(s) to remaining X925 performance cores (disjoint from gNB)
+        cap_drop:
+            - ALL
+        cap_add:
+            - NET_ADMIN  # for interface bringup
+            - NET_RAW    # for ping
+        volumes:
+            - /home/ways_lab/repos/tinytwin-oai:/opt/tt-ran/tt:rw
+            - /home/ways_lab/repos/Tiny_Twin/ci-scripts/conf_files/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+            - /home/ways_lab/repos/Tiny_Twin/logs_ue:/opt/oai-nr-ue/etc/logs
+        entrypoint: >
+            /bin/bash -c "ls && cd tt/cmake_targets/ran_build/build/ &&
+            ./nr-uesoftmodem --uicc0.imsi 001010000000011 -C 3619200000 -r 106 --numerology 1 --ssb 516 -E --sa --rfsim --rfsimulator.options chanmod -O ../../../ci-scripts/conf_files/nrue.uicc.conf --TAP 1 --channelmod.modellist_rfsimu_1.[0].noise_power_dB -9.0050 --channelmod.modellist_rfsimu_1.[1].noise_power_dB -9.0050 --rfsimulator.serveraddr 192.168.70.140 &&
+            exec /bin/bash"
+        # entrypoint: /bin/bash
+        stdin_open: true  
+        tty: true        
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.151
+        devices:
+             - /dev/net/tun:/dev/net/tun
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-uesoftmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+ 
+    
+    edgeric:
+        container_name: edgeric_v2_2
+        # Build info
+        image: edgeric/v2
+        build:
+            context: /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments/edgeric-v2
+            dockerfile: ../Dockerfile-edgeric
+            args:
+                OS_VERSION: "24.04"
+        # privileged mode is requred only for accessing usb devices
+        privileged: true
+        ports:
+            - "7000:7000"
+        # entrypoint: ["/home/EdgeRIC-A-real-time-RIC/srsran_entrypoint.sh"]
+        # Extra capabilities always required
+        cap_add:
+            - SYS_NICE
+            - CAP_SYS_PTRACE
+        volumes:
+            # - ${pwd}/radio_network:/home/EdgeRIC-A-real-time-RIC:rw
+            - /tmp/.X11-unix:/tmp/.X11-unix:rw
+            - /dev:/dev
+            # - ${PWD:-.}:/home/EdgeRIC-A-real-time-RIC:rw
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments/edgeric-v2:/home/EdgeRIC:rw
+        # It creates a file/folder into /config_name inside the container
+        # Its content would be the value of the file used to create the config
+        # configs:
+        #   - gnb_config.yml
+        # Customize your desired network mode.
+        # current netowrk configuration creastes a private netwoek with both containers attached
+        # An alterantive would be `network: host"`. That would expose your host network into the container. It's the easiest to use if the 5gc is not in your PC
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.166
+        # Start GNB container after 5gc is up and running
+        # depends_on:
+        #   gnb:
+        #     condition: service_healthy
+
+
+networks:
+    public_net:
+        driver: bridge
+        external: true
+        name:  oai-cn5g-public-net

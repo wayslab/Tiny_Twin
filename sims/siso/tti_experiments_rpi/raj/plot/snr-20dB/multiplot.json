@@ -1,0 +1,11 @@
+{
+  "_runcmd": "cd /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi && python3 multiplot.py raj/plot/snr-20dB/multiplot.json",
+  "title": "raj UL metrics — channel comparison (--snr 20)",
+  "out": "multiplot.png",
+  "traces": [
+    {"path": "gt_los/snr.txt",    "label": "GT LOS"},
+    {"path": "pred_los/snr.txt",  "label": "Pred LOS"},
+    {"path": "gt_nlos/snr.txt",   "label": "GT NLOS"},
+    {"path": "pred_nlos/snr.txt", "label": "Pred NLOS"}
+  ]
+}

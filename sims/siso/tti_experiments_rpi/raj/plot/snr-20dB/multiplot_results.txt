@@ -1,0 +1,62 @@
+{
+  "title": "raj UL metrics \u2014 channel comparison (--snr 20)",
+  "note": "iperf received goodput; total_MB = integral of per-second rate",
+  "channels": {
+    "GT LOS": {
+      "ul": {
+        "mean_kbps": 8347.8,
+        "peak_kbps": 46580.0,
+        "total_MB": 88.7,
+        "duration_s": 85.0
+      },
+      "dl": {
+        "mean_kbps": 1043.9,
+        "peak_kbps": 1117.0,
+        "total_MB": 10.57,
+        "duration_s": 81.0
+      }
+    },
+    "Pred LOS": {
+      "ul": {
+        "mean_kbps": 6718.7,
+        "peak_kbps": 36974.0,
+        "total_MB": 71.39,
+        "duration_s": 85.0
+      },
+      "dl": {
+        "mean_kbps": 1048.6,
+        "peak_kbps": 1152.0,
+        "total_MB": 9.7,
+        "duration_s": 74.0
+      }
+    },
+    "GT NLOS": {
+      "ul": {
+        "mean_kbps": 5370.2,
+        "peak_kbps": 27611.0,
+        "total_MB": 57.06,
+        "duration_s": 85.0
+      },
+      "dl": {
+        "mean_kbps": 1043.8,
+        "peak_kbps": 1094.0,
+        "total_MB": 10.57,
+        "duration_s": 81.0
+      }
+    },
+    "Pred NLOS": {
+      "ul": {
+        "mean_kbps": 4848.0,
+        "peak_kbps": 34237.0,
+        "total_MB": 51.51,
+        "duration_s": 85.0
+      },
+      "dl": {
+        "mean_kbps": 1000.0,
+        "peak_kbps": 1094.0,
+        "total_MB": 8.0,
+        "duration_s": 64.0
+      }
+    }
+  }
+}
