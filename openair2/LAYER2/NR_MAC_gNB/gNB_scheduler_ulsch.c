@@ -644,6 +644,14 @@ void handle_nr_ul_harq(const int CC_idP,
   DevAssert(harq->is_waiting);
   harq->feedback_slot = -1;
   harq->is_waiting = false;
+  // per-TB UL HARQ outcome, stored in snr.txt for retransmission analysis:
+  //   HARQ_ROUND = round this PUSCH was sent at (0 = first tx, >=1 = retransmission)
+  //   HARQ_CRC   = tb_crc_status (0 = passed, 1 = failed)
+  if (mcslog) {
+    fprintf(fpsnr, "TTI Index: %d\n", tti_counter);
+    fprintf(fpsnr, "UL HARQ_ROUND: %d RNTI: %04x\n", harq->round, crc_pdu->rnti);
+    fprintf(fpsnr, "UL HARQ_CRC: %d RNTI: %04x\n", crc_pdu->tb_crc_status, crc_pdu->rnti);
+  }
   if (!crc_pdu->tb_crc_status) {
     finish_nr_ul_harq(sched_ctrl, harq_pid);
     LOG_D(NR_MAC,
