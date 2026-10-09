@@ -1,0 +1,90 @@
+{
+  "title": "20261009 AI53_017 UL metrics \u2014 gt/2nn/nerf x path A/B (--snr 30)",
+  "note": "iperf received goodput; total_MB = integral of per-second rate",
+  "channels": {
+    "GT A": {
+      "ul": {
+        "mean_kbps": 28817113.6,
+        "peak_kbps": 33392952.0,
+        "total_MB": 619567.94,
+        "duration_s": 171.4
+      },
+      "dl": {
+        "mean_kbps": 0.0,
+        "peak_kbps": 0.0,
+        "total_MB": 0.0,
+        "duration_s": 0.0
+      }
+    },
+    "2NN A": {
+      "ul": {
+        "mean_kbps": 29755288.3,
+        "peak_kbps": 34247541.0,
+        "total_MB": 178531.73,
+        "duration_s": 48.0
+      },
+      "dl": {
+        "mean_kbps": 0.0,
+        "peak_kbps": 0.0,
+        "total_MB": 0.0,
+        "duration_s": 0.0
+      }
+    },
+    "NeRF A": {
+      "ul": {
+        "mean_kbps": 31090382.7,
+        "peak_kbps": 34738796.0,
+        "total_MB": 668443.23,
+        "duration_s": 171.4
+      },
+      "dl": {
+        "mean_kbps": 0.0,
+        "peak_kbps": 0.0,
+        "total_MB": 0.0,
+        "duration_s": 0.0
+      }
+    },
+    "GT B": {
+      "ul": {
+        "mean_kbps": 27618251.8,
+        "peak_kbps": 33326461.0,
+        "total_MB": 593792.41,
+        "duration_s": 171.4
+      },
+      "dl": {
+        "mean_kbps": 0.0,
+        "peak_kbps": 0.0,
+        "total_MB": 0.0,
+        "duration_s": 0.0
+      }
+    },
+    "2NN B": {
+      "ul": {
+        "mean_kbps": 28527903.1,
+        "peak_kbps": 33635707.0,
+        "total_MB": 613349.92,
+        "duration_s": 171.4
+      },
+      "dl": {
+        "mean_kbps": 0.0,
+        "peak_kbps": 0.0,
+        "total_MB": 0.0,
+        "duration_s": 0.0
+      }
+    },
+    "NeRF B": {
+      "ul": {
+        "mean_kbps": 28838614.6,
+        "peak_kbps": 33291239.0,
+        "total_MB": 620030.21,
+        "duration_s": 171.4
+      },
+      "dl": {
+        "mean_kbps": 0.0,
+        "peak_kbps": 0.0,
+        "total_MB": 0.0,
+        "duration_s": 0.0
+      }
+    }
+  }
+}

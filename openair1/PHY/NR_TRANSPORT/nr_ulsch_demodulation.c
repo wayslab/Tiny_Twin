@@ -10,6 +10,7 @@
 #include "common/utils/nr/nr_common.h"
 #include <openair1/PHY/TOOLS/phy_scope_interface.h>
 #include "PHY/sse_intrin.h"
+#include "./../../../executables/edgeric/wrapper.h"  // MIMO-RIC: ric_set_channel + agent
 
 #define INVALID_VALUE 255
 
@@ -1479,6 +1480,7 @@ int nr_rx_pusch_tp(PHY_VARS_gNB *gNB,
   nfapi_nr_pusch_pdu_t *rel15_ul = &gNB->ulsch[ulsch_id].harq_process->ulsch_pdu;
 
   NR_gNB_PUSCH *pusch_vars = &gNB->pusch_vars[ulsch_id];
+  { static int _e = 0; if ((_e++ % 200) == 0) { FILE *_f = fopen("/tmp/ricdbg.txt", "a"); if (_f) { fprintf(_f, "ENTRY nr_rx_pusch_tp ulsch_id=%d nrx=%d\n", ulsch_id, gNB->frame_parms.nb_antennas_rx); fclose(_f); } } }
   int nbSymb = 0;
   uint32_t bwp_start_subcarrier = ((rel15_ul->rb_start + rel15_ul->bwp_start) * NR_NB_SC_PER_RB + frame_parms->first_carrier_offset) % frame_parms->ofdm_symbol_size;
   LOG_D(PHY,"pusch %d.%d : bwp_start_subcarrier %d, rb_start %d, first_carrier_offset %d\n", frame,slot,bwp_start_subcarrier, rel15_ul->rb_start, frame_parms->first_carrier_offset);
@@ -1657,6 +1659,62 @@ int nr_rx_pusch_tp(PHY_VARS_gNB *gNB,
                            (rel15_ul->ul_dmrs_symb_pos >> meas_symbol) & 0x01, 
                            rel15_ul,
                            frame_parms);
+
+  // ---- MIMO-RIC (Piece 1): export per-antenna UL channel to edgeric ----
+  // For each rx antenna, export layer-0's channel estimate at EVERY allocated subcarrier
+  // (DS_SC = 1, no downsample), flattened [rx][sc] -> (re,im). Gated to every PERIOD slots.
+  {
+    const int DS_SC = 1;    // subcarrier export stride (1 = full resolution, no downsample)
+    const int nrx = frame_parms->nb_antennas_rx;
+    if (nrx > 0 && agent) {
+      // Exact size: nrx antennas * full allocation * (re,im). VLA keeps stack use proportional
+      // to the actual grant (<= ~5k floats for 2 rx @ 106 PRB) rather than a fixed worst case.
+      const int cap = nrx * buffer_length * 2;
+      float chbuf[cap];
+      int idx = 0, nsc = 0;
+      for (int aarx = 0; aarx < nrx && aarx < 8; aarx++) {
+        // extracted per-RE channel (layer 0 -> this rx antenna), just filled by nr_ulsch_extract_rbs above.
+        // ul_ch_estimates_ext is int[]; each word packs a c16_t. The allocation's REs live at
+        // offset meas_symbol*nb_re_pusch, so symbol-0 of the raw ul_ch_estimates was all zeros.
+        c16_t *che = (c16_t *)ul_ch_estimates_ext[0 * nrx + aarx];
+        int base = meas_symbol * nb_re_pusch;
+        int cnt = 0;
+        for (int re = 0; re < buffer_length && (idx + 2) <= cap; re += DS_SC) {
+          chbuf[idx++] = (float)che[base + re].r;
+          chbuf[idx++] = (float)che[base + re].i;
+          cnt++;
+        }
+        nsc = cnt;
+      }
+      ric_set_channel(agent, rel15_ul->rnti, chbuf, idx, (uint32_t)nrx, (uint32_t)nsc);
+    }
+  }
+
+  // ---- MIMO-RIC (Piece 1b): export the RAW LS per-antenna UL channel (pre-filter) ----
+  // Same full-resolution [rx][sc] flattening as above, but sourced from ul_ls_est_ric, which
+  // nr_pusch_channel_estimation captured for layer 0 before its interpolation filter. The
+  // filtered ul_channel reads flat for a multi-tap channel; this one keeps the taps.
+  {
+    const int DS_SC = 1;
+    const int nrx = frame_parms->nb_antennas_rx;
+    if (nrx > 0 && agent) {
+      const int cap = nrx * buffer_length * 2;
+      float lsbuf[cap];
+      int idx = 0, nsc = 0;
+      for (int aarx = 0; aarx < nrx && aarx < 8; aarx++) {
+        // ul_ls_est_ric is stored allocation-local (RE 0..buffer_length-1), no symbol offset.
+        c16_t *che = (c16_t *)pusch_vars->ul_ls_est_ric[0 * nrx + aarx];
+        int cnt = 0;
+        for (int re = 0; re < buffer_length && (idx + 2) <= cap; re += DS_SC) {
+          lsbuf[idx++] = (float)che[re].r;
+          lsbuf[idx++] = (float)che[re].i;
+          cnt++;
+        }
+        nsc = cnt;
+      }
+      ric_set_channel_ls(agent, rel15_ul->rnti, lsbuf, idx, (uint32_t)nrx, (uint32_t)nsc);
+    }
+  }
 
   int avgs = 0;
   int avg[frame_parms->nb_antennas_rx*rel15_ul->nrOfLayers];

@@ -1,0 +1,77 @@
+
+services:
+    tt-gnb:
+        image: tt-gnb:v2
+        container_name: tt-gnb
+        privileged: true
+        cpuset: "5,6,7,8"
+        cap_drop: [ALL]
+        cap_add: [NET_ADMIN, NET_RAW]
+        volumes:
+            - /home/ways_lab/repos/tinytwin-oai:/opt/tt-ran/tt:rw
+            - /home/ways_lab/repos/Tiny_Twin/targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.2x2.ethan.conf:/opt/tt-ran/etc/gnb.conf
+            - /home/ways_lab/repos/Tiny_Twin/channel/channel_real.txt:/opt/tt-ran/tt/channel/channel_real.txt
+            - /home/ways_lab/repos/Tiny_Twin/channel/channel_imag.txt:/opt/tt-ran/tt/channel/channel_imag.txt
+            - /home/ways_lab/repos/Tiny_Twin/logs_gnb:/opt/tt-ran/etc/logs
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/Ethan/ethan_run_gnb.sh:/opt/tt-ran/run.sh
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/stop.sh:/opt/tt-ran/stop.sh
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/build.sh:/opt/tt-ran/build.sh
+        entrypoint: /bin/bash
+        stdin_open: true
+        tty: true
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.140
+
+    tt-nrue1:
+        image: tt-nrue:v2
+        container_name: tt-ue1
+        privileged: true
+        cpuset: "9,15,16,17,18,19"
+        cap_drop: [ALL]
+        cap_add: [NET_ADMIN, NET_RAW]
+        volumes:
+            - /home/ways_lab/repos/tinytwin-oai:/opt/tt-ran/tt:rw
+            - /home/ways_lab/repos/Tiny_Twin/ci-scripts/conf_files/nrue.uicc.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+            - /home/ways_lab/repos/Tiny_Twin/logs_ue:/opt/oai-nr-ue/etc/logs
+        entrypoint: >
+            /bin/bash -c "cd tt/cmake_targets/ran_build/build/ &&
+            ./nr-uesoftmodem --uicc0.imsi 001010000000011 -C 3619200000 -r 106 --numerology 1 --ssb 516 -E --sa --rfsim --rfsimulator.options chanmod -O ../../../ci-scripts/conf_files/nrue.uicc.conf --TAP 16 --channelmod.modellist_rfsimu_1.[0].noise_power_dB -9.0050 --channelmod.modellist_rfsimu_1.[1].noise_power_dB -9.0050 --ue-nb-ant-rx 2 --ue-nb-ant-tx 2 --rfsimulator.serveraddr 192.168.70.140 &&
+            exec /bin/bash"
+        stdin_open: true
+        tty: true
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.151
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        healthcheck:
+            test: /bin/bash -c "pgrep nr-uesoftmodem"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    edgeric:
+        container_name: edgeric_v2_2
+        image: edgeric/v2
+        build:
+            context: /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments/edgeric-v2
+            dockerfile: ../Dockerfile-edgeric
+            args:
+                OS_VERSION: "24.04"
+        privileged: true
+        ports: ["7000:7000"]
+        cap_add: [SYS_NICE, CAP_SYS_PTRACE]
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix:rw
+            - /dev:/dev
+            - /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments/edgeric-v2:/home/EdgeRIC:rw
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.166
+
+networks:
+    public_net:
+        driver: bridge
+        external: true
+        name: oai-cn5g-public-net

@@ -1,0 +1,13 @@
+{
+  "_runcmd": "cd /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi && python3 multiplot.py raj/plot/gt_2nn_nerf/multiplot.json",
+  "title": "20261009 AI53_017 UL metrics — gt/2nn/nerf x path A/B (--snr 30)",
+  "out": "multiplot.png",
+  "traces": [
+    {"path": "gt_A/snr.txt",   "label": "GT A"},
+    {"path": "2nn_A/snr.txt",  "label": "2NN A"},
+    {"path": "nerf_A/snr.txt", "label": "NeRF A"},
+    {"path": "gt_B/snr.txt",   "label": "GT B"},
+    {"path": "2nn_B/snr.txt",  "label": "2NN B"},
+    {"path": "nerf_B/snr.txt", "label": "NeRF B"}
+  ]
+}

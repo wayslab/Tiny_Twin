@@ -194,6 +194,16 @@ int nr_pusch_channel_estimation(PHY_VARS_gNB *gNB,
         pilot_cnt += 2;
       }
 
+      // MIMO-RIC: snapshot the raw LS CFR for layer 0 BEFORE the delay-compensation +
+      // interpolation low-pass filter below collapses it to a single delay. This un-smoothed
+      // estimate keeps a multi-tap ground-truth channel visible in the exported CIR.
+      if (nl == 0) {
+        c16_t *ls_ric = (c16_t *)pusch_vars->ul_ls_est_ric[aarx];
+        const int nb_re = nb_rb_pusch * NR_NB_SC_PER_RB;
+        const int ncopy = nb_re < symbolSize ? nb_re : symbolSize;
+        memcpy(ls_ric, ul_ls_est, sizeof(c16_t) * ncopy);
+      }
+
       nr_est_delay(gNB->frame_parms.ofdm_symbol_size, ul_ls_est, (c16_t *)pusch_vars->ul_ch_estimates_time[aarx], delay);
       int delay_idx = get_delay_idx(delay->est_delay, MAX_DELAY_COMP);
       c16_t *ul_delay_table = gNB->frame_parms.delay_table[delay_idx];

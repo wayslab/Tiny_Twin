@@ -122,6 +122,35 @@ extern int first_time;
 extern int gnb1_ue0;
 extern int taplen;
 
+#include <math.h>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+// --- Ethan AoA: tunable uniform-linear-array (ULA) steering on the gNB rx ---
+// Stock rfsim fans a 1-Tx UE out to all gNB rx antennas with a bit-identical
+// memcpy, so every antenna sees ZERO phase difference and AoA is undefined. We
+// instead impose a half-wavelength (d = lambda/2) ULA steering phase on each rx
+// antenna a:   phi_a = pi * a * sin(theta0),  theta0 = ground-truth AoA (rad).
+// theta0 is read ONCE per process from channel/aoa_steer.txt (one float, radians;
+// default 0 => broadside => no phase ramp, i.e. stock behavior). The driver
+// rewrites that file between runs to sweep the injected AoA.
+static double g_aoa_steer_rad = 0.0;
+static int    g_aoa_steer_loaded = 0;
+static double rfsimu_aoa_steer_rad(void) {
+  if (!g_aoa_steer_loaded) {
+    g_aoa_steer_loaded = 1;            // load at most once (per gNB process)
+    FILE *fa = fopen("../../../channel/aoa_steer.txt", "r");
+    if (fa) {
+      double v = 0.0;
+      if (fscanf(fa, "%lf", &v) == 1) g_aoa_steer_rad = v;
+      fclose(fa);
+    }
+    LOG_I(HW, "[ethan-aoa] ULA steering theta0 = %.6f rad (%.2f deg), d=lambda/2\n",
+          g_aoa_steer_rad, g_aoa_steer_rad * 180.0 / M_PI);
+  }
+  return g_aoa_steer_rad;
+}
+
 static void getset_currentchannels_type(char *buf, int debug, webdatadef_t *tdata, telnet_printfunc_t prnt);
 extern int get_currentchannels_type(char *buf, int debug, webdatadef_t *tdata, telnet_printfunc_t prnt); // in random_channel.c
 static int rfsimu_setchanmod_cmd(char *buff, int debug, telnet_printfunc_t prnt, void *arg);
@@ -723,10 +752,22 @@ static int rfsimulator_write_internal(rfsimulator_state_t *t, openair0_timestamp
         }
       } else {
         for (int a = 0; a < nbAnt; a++) {
-          sample_t *in = (sample_t *)samplesVoid[a];
-
-          for (int s = 0; s < nsamps; s++)
-            tmpSamples[s][a] = in[s];
+          if (gnb1_ue0 == 0 && first_time != 0 && taplen > 0 && b->channel_model != NULL) {
+            // MIMO uplink: apply the per-antenna multi-tap channel (same convolution as the
+            // SISO txAddInput path) instead of passing samples straight through. Without this
+            // a 2x2 uplink carries NO channel, so a multi-tap ground truth never reaches the
+            // gNB and the extracted CIR reads flat. One channel-file row is consumed per
+            // antenna (the mimo file has nb_rx rows/slot), and tx0's taps are the UL CIR.
+            sample_t conv[nsamps];
+            txAddInput((c16_t *)samplesVoid[a], (c16_t *)conv, a,
+                       b->channel_model, nsamps, t->lastWroteTS, CirSize);
+            for (int s = 0; s < nsamps; s++)
+              tmpSamples[s][a] = conv[s];
+          } else {
+            sample_t *in = (sample_t *)samplesVoid[a];
+            for (int s = 0; s < nsamps; s++)
+              tmpSamples[s][a] = in[s];
+          }
         }
 
         if (b->conn_sock >= 0) {
@@ -1053,19 +1094,49 @@ static int rfsimulator_read(openair0_device *device, openair0_timestamp *ptimest
             } else {
               memcpy(out, firstSample, sampleToByte(nsamps, 1));
             }
+            // Ethan AoA: on the gNB rx (gnb1_ue0==1, server role), rotate this
+            // antenna's copied samples by the ULA steering phase so the 4 rx
+            // antennas carry a lambda/2 AoA phase ramp from the single Tx UE.
+            // a==0 => phi=0 => identity (rx0 untouched); a>0 => phi = pi*a*sin(theta0).
+            if (gnb1_ue0 == 1 && a > 0) {
+              const double phi  = M_PI * (double)a * sin(rfsimu_aoa_steer_rad());
+              const double cphi = cos(phi), sphi = sin(phi);
+              for (int i = 0; i < nsamps; i++) {
+                const double xr = (double)out[i].r, xi = (double)out[i].i;
+                out[i].r = (short)lround(xr * cphi - xi * sphi);
+                out[i].i = (short)lround(xr * sphi + xi * cphi);
+              }
+            }
           } else {
             // SIMD (with simde) optimization might be added here later
-            double H_awgn_mimo[4][4] = {{1.0, 0.2, 0.1, 0.05}, // rx 0
-                                        {0.2, 1.0, 0.2, 0.1}, // rx 1
-                                        {0.1, 0.2, 1.0, 0.2}, // rx 2
-                                        {0.05, 0.1, 0.2, 1.0}}; // rx 3
-
+            // Complex spatial MIMO channel H[rx][tx] = |h|*e^{j*phi}: every (rx,tx) path has
+            // its OWN magnitude AND phase, so the per-rx channels genuinely differ in phase
+            // (array geometry / scattering) as in a real system -- NOT a receiver-side rotation.
+            // y[rx] = sum_tx H[rx][tx] * x[tx]  (full complex multiply).
+            const double Hmag[4][4] = {{1.00, 0.20, 0.10, 0.05},  // rx 0
+                                       {0.20, 1.00, 0.20, 0.10},  // rx 1
+                                       {0.10, 0.20, 1.00, 0.20},  // rx 2
+                                       {0.05, 0.10, 0.20, 1.00}}; // rx 3
+            const double Hphi[4][4] = {{ 0.00,  0.40,  0.80,  1.20},  // rx 0 path phases [rad]
+                                       { 1.00,  1.40,  1.80,  2.20},  // rx 1
+                                       { 2.00,  2.40,  2.80, -3.00},  // rx 2
+                                       {-2.50, -2.00, -1.50, -1.00}}; // rx 3
+            double hr[4], hi[4]; // this rx antenna's row, precomputed
+            for (int tx = 0; tx < 4; tx++) {
+              hr[tx] = Hmag[a & 3][tx] * cos(Hphi[a & 3][tx]);
+              hi[tx] = Hmag[a & 3][tx] * sin(Hphi[a & 3][tx]);
+            }
             LOG_D(HW, "nbAnt_tx %d\n", nbAnt_tx);
             for (int i = 0; i < nsamps; i++) { // loop over nsamps
-              for (int a_tx = 0; a_tx < nbAnt_tx; a_tx++) { // sum up signals from nbAnt_tx antennas
-                out[i].r += (short)(ptr->circularBuf[((firstIndex + i) * nbAnt_tx + a_tx) % CirSize].r * H_awgn_mimo[a][a_tx]);
-                out[i].i += (short)(ptr->circularBuf[((firstIndex + i) * nbAnt_tx + a_tx) % CirSize].i * H_awgn_mimo[a][a_tx]);
+              double acc_r = 0.0, acc_i = 0.0;
+              for (int a_tx = 0; a_tx < nbAnt_tx; a_tx++) { // sum signals from nbAnt_tx tx antennas
+                const int ci = ((firstIndex + i) * nbAnt_tx + a_tx) % CirSize;
+                const double xr = ptr->circularBuf[ci].r, xi = ptr->circularBuf[ci].i;
+                acc_r += xr * hr[a_tx] - xi * hi[a_tx];
+                acc_i += xr * hi[a_tx] + xi * hr[a_tx];
               } // end for a_tx
+              out[i].r += (short)acc_r;
+              out[i].i += (short)acc_i;
             } // end for i (number of samps)
           } // end of 1 tx antenna optimization
         } // end of no channel modeling

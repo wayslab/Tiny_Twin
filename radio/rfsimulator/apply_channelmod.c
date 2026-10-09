@@ -39,6 +39,12 @@ extern FILE *fpi[50];
 extern int first_time;
 // extern FILE *fplog4; 
 extern int taplen;
+// --- jammer channel (white noise replayed through its own per-TTI taps) ---
+extern FILE *fpr_jam[50]; // jammer taps, real part (one handle per socket)
+extern FILE *fpi_jam[50]; // jammer taps, imag part
+extern int jam_enable;    // 0/1 from --JAM
+extern double jam_gain;   // linear output gain from --JGAIN
+extern int jamtaplen;     // number of jammer taps from --JTAP (default 64)
 //extern int counterr;
  //int counter=0;
 //  FILE *fpr;
@@ -78,6 +84,7 @@ void rxAddInput(const c16_t *input_sig,
 {
   
   char strr[2000],stri[2000];
+  static int line_count = 0;  
  
   //fgets(strr, sizeof(strr), fpr);
   //fgets(stri, sizeof(stri), fpi);
@@ -165,8 +172,22 @@ void rxAddInput(const c16_t *input_sig,
   const int nbTx=channelDesc->nb_tx;
    // counterr++;
   // int mylen=1;
-  float mchannelModelr[20]={1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  float mchannelModeli[20]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  // --- MIMO channel matrix, cached per receive cycle (fixes the nb_rx>1 de-sync) ------
+  //   The RX loop calls rxAddInput once per rx antenna (rxAnt = 0..nb_rx-1, in order).
+  //   We load the WHOLE nb_rx x nb_tx matrix ONCE on the rxAnt==0 call into a per-socket
+  //   cache; each rx antenna then points at its own row. Row = flat tx-major
+  //   [txAnt*taplen + l]; nb_tx*taplen must be <= 1024.
+  #define _MIMO_MAXSOCK 8
+  #define _MIMO_MAXRX   8
+  static float Hr_cache[_MIMO_MAXSOCK][_MIMO_MAXRX][8*128];
+  static float Hi_cache[_MIMO_MAXSOCK][_MIMO_MAXRX][8*128];
+  const int nbRx = channelDesc->nb_rx;
+  int si = (int)sock_num - first_time;
+  if (si < 0) si = 0;
+  if (si >= _MIMO_MAXSOCK) si = _MIMO_MAXSOCK - 1;
+  const int rxi = (rxAnt >= 0 && rxAnt < _MIMO_MAXRX) ? rxAnt : 0;
+  const float *mchannelModelr = Hr_cache[si][rxi]; // this rx antenna's row
+  const float *mchannelModeli = Hi_cache[si][rxi];
       //printf("hiii\n");
     
     struct timespec start, end; // Structs to store time
@@ -178,31 +199,48 @@ void rxAddInput(const c16_t *input_sig,
     //   fflush(fplog4); // Ensure it's written to the file immediately
     // }
 
-    if (fgets(strr, sizeof(strr), fpr[sock_num-first_time]) != NULL) {
-      // Read successful, process the line in strr
-      //printf("Read line: %s", strr);
-      char *token1 = strtok(strr, " ");
-      int idx1 = 0;
-
-      while (token1 != NULL && idx1 < taplen) {
-          mchannelModelr[idx1] = atof(token1);
-          //printf("%f\n",mchannelModelr[idx1]);
-          token1 = strtok(NULL, " ");
-          idx1++;
+    // Load the full nb_rx x nb_tx channel matrix ONCE per cycle (on the rxAnt==0 call);
+    // one file line per rx antenna. Other rx antennas reuse the cache via the row pointers.
+    if (rxAnt == 0) {
+      for (int r = 0; r < nbRx && r < _MIMO_MAXRX; r++) {
+        if (fgets(strr, sizeof(strr), fpr[si]) == NULL) { rewind(fpr[si]); if (fgets(strr, sizeof(strr), fpr[si]) == NULL) break; }
+        char *tk = strtok(strr, " ");
+        int k = 0;
+        for (; tk != NULL && k < nbTx*taplen && k < 8*128; k++) { Hr_cache[si][r][k] = atof(tk); tk = strtok(NULL, " "); }
+        for (; k < 8*128; k++) Hr_cache[si][r][k] = 0.0f;
+        if (fgets(stri, sizeof(stri), fpi[si]) == NULL) { rewind(fpi[si]); if (fgets(stri, sizeof(stri), fpi[si]) == NULL) break; }
+        tk = strtok(stri, " ");
+        k = 0;
+        for (; tk != NULL && k < nbTx*taplen && k < 8*128; k++) { Hi_cache[si][r][k] = atof(tk); tk = strtok(NULL, " "); }
+        for (; k < 8*128; k++) Hi_cache[si][r][k] = 0.0f;
       }
-      //printf("\n");
+      line_count += nbRx;
+      if (line_count % 1000 < nbRx) printf("TTI %llu: MIMO channel rows loaded, sock %u\n", TS, sock_num);
     }
-   
-    if (fgets(stri, sizeof(stri), fpi[sock_num-first_time]) != NULL) {
-      // Read successful, process the line in strr
-      //printf("Read line: %s", stri);
-      char *token2 = strtok(stri, " ");
-      int idx2 = 0;
 
-      while (token2 != NULL && idx2 < taplen) {
-          mchannelModeli[idx2] = atof(token2);
-          token2 = strtok(NULL, " ");
-          idx2++;
+
+    // --- jammer channel: load this TTI's jammer taps (real + imag), rewind on EOF ---
+    float jamr[128] = {0}; // jammer taps, real (zero-initialised so unused taps are 0)
+    float jami[128] = {0}; // jammer taps, imag
+    if (jam_enable && fpr_jam[sock_num-first_time] != NULL && fpi_jam[sock_num-first_time] != NULL) {
+      char jstr_r[2000], jstr_i[2000];
+      if (fgets(jstr_r, sizeof(jstr_r), fpr_jam[sock_num-first_time]) == NULL) {
+        rewind(fpr_jam[sock_num-first_time]);
+        fgets(jstr_r, sizeof(jstr_r), fpr_jam[sock_num-first_time]);
+      }
+      char *jt = strtok(jstr_r, " ");
+      for (int j = 0; jt != NULL && j < jamtaplen && j < 128; j++) {
+        jamr[j] = atof(jt);
+        jt = strtok(NULL, " ");
+      }
+      if (fgets(jstr_i, sizeof(jstr_i), fpi_jam[sock_num-first_time]) == NULL) {
+        rewind(fpi_jam[sock_num-first_time]);
+        fgets(jstr_i, sizeof(jstr_i), fpi_jam[sock_num-first_time]);
+      }
+      jt = strtok(jstr_i, " ");
+      for (int j = 0; jt != NULL && j < jamtaplen && j < 128; j++) {
+        jami[j] = atof(jt);
+        jt = strtok(NULL, " ");
       }
     }
 
@@ -236,6 +274,9 @@ void rxAddInput(const c16_t *input_sig,
   // X*H*N/threads;
 
   // #pragma omp parallel for schedule(guided, chunk) num_threads(threads)
+  // jammer white-noise history ring (per call); indexed modulo 128, only last jamtaplen used
+  double jnhist_r[128] = {0}, jnhist_i[128] = {0};
+  int jhpos = 0;
   for (int i=0; i<nbSamples; i++) {
    
     struct complex16 *out_ptr=after_channel_sig+i;
@@ -290,8 +331,9 @@ void rxAddInput(const c16_t *input_sig,
         const struct complex16 tx16 = input_sig[idx];
         // rx_tmp.r += tx16.r * channelModel[l].r - tx16.i * channelModel[l].i;
         // rx_tmp.i += tx16.i * channelModel[l].r + tx16.r * channelModel[l].i;
-        rx_tmp.r += tx16.r * mchannelModelr[l] - tx16.i * mchannelModeli[l];
-        rx_tmp.i += tx16.i * mchannelModelr[l] + tx16.r * mchannelModeli[l];
+        // MIMO: taps for the (rxAnt, txAnt) pair live at flat offset txAnt*taplen
+        rx_tmp.r += tx16.r * mchannelModelr[txAnt*taplen + l] - tx16.i * mchannelModeli[txAnt*taplen + l];
+        rx_tmp.i += tx16.i * mchannelModelr[txAnt*taplen + l] + tx16.r * mchannelModeli[txAnt*taplen + l];
         //printf("Read line: %f", mchannelModelr);
         //printf("Loop l=%d, txAnt=%d, rxAnt=%d\n", l, txAnt, rxAnt);
         //printf("  tx16 (real: %d, imag: %d), channelModel[%d] (real: %f, imag: %f)\n", tx16.r, tx16.i, l, channelModel[l].r, channelModel[l].i);
@@ -311,8 +353,24 @@ void rxAddInput(const c16_t *input_sig,
       channelDesc->Doppler_phase_cur[rxAnt] += channelDesc->Doppler_phase_inc;
     }
 
-    out_ptr->r += lround(rx_tmp.r*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0));
-    out_ptr->i += lround(rx_tmp.i*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0));
+    // --- jammer: fresh white noise pushed through the jammer channel taps ---
+    double jam_r = 0.0, jam_i = 0.0;
+    if (jam_enable) {
+      jnhist_r[jhpos] = gaussZiggurat(0.0, 1.0); // newest noise sample
+      jnhist_i[jhpos] = gaussZiggurat(0.0, 1.0);
+      for (int l = 0; l < jamtaplen && l < 128; l++) {
+        const int hp = (jhpos - l + 128) % 128;  // noise(i-l)
+        const double sr = jnhist_r[hp], si = jnhist_i[hp];
+        jam_r += jamr[l]*sr - jami[l]*si;
+        jam_i += jamr[l]*si + jami[l]*sr;
+      }
+      jhpos = (jhpos + 1) % 128;
+      jam_r *= jam_gain;
+      jam_i *= jam_gain;
+    }
+
+    out_ptr->r += lround(rx_tmp.r*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0) + jam_r);
+    out_ptr->i += lround(rx_tmp.i*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0) + jam_i);
     out_ptr++;
   }
 
@@ -364,36 +422,71 @@ const uint64_t dd = channelDesc->channel_offset;
 // // counterr++;
 // // int mylen=1;
 
-float mchannelModelr[20]={1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-float mchannelModeli[20]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+float mchannelModelr[128]={1}; // sized 128 to safely hold up to 128 signal taps (--TAP)
+float mchannelModeli[128]={0};
 // //printf("hiii\n");
 
 
-if (fgets(strr, sizeof(strr), fpr[1]) != NULL) {
-  // Read successful, process the line in strr
-  //printf("Read line: %s", strr);
-  char *token1 = strtok(strr, " ");
-  int idx1 = 0;
-
-  while (token1 != NULL && idx1 < taplen) {
-  mchannelModelr[idx1] = atof(token1);
-  //printf("%f\n",mchannelModelr[idx1]);
-  token1 = strtok(NULL, " ");
-  idx1++;
+if (fgets(strr, sizeof(strr), fpr[1]) != NULL) {  
+  char *token1 = strtok(strr, " ");  
+  int idx1 = 0;  
+  while (token1 != NULL && idx1 < taplen) {  
+    mchannelModelr[idx1] = atof(token1);  
+    token1 = strtok(NULL, " ");  
+    idx1++;  
+  }  
+}  
+else {  
+  rewind(fpr[1]);  // ADD THIS LINE  
+  if (fgets(strr, sizeof(strr), fpr[1]) != NULL) {  
+    char *token1 = strtok(strr, " ");  
+    int idx1 = 0;  
+    while (token1 != NULL && idx1 < taplen) {  
+      mchannelModelr[idx1] = atof(token1);  
+      token1 = strtok(NULL, " ");  
+      idx1++;  
+    }  
+  }  
+}  
+  
+if (fgets(stri, sizeof(stri), fpi[1]) != NULL) {  
+  char *token2 = strtok(stri, " ");  
+  int idx2 = 0;  
+  while (token2 != NULL && idx2 < taplen) {  
+    mchannelModeli[idx2] = atof(token2);  
+    token2 = strtok(NULL, " ");  
+    idx2++;  
+  }  
+}  
+else {  
+  rewind(fpi[1]);  // ADD THIS LINE  
+  if (fgets(stri, sizeof(stri), fpi[1]) != NULL) {  
+    char *token2 = strtok(stri, " ");  
+    int idx2 = 0;  
+    while (token2 != NULL && idx2 < taplen) {  
+      mchannelModeli[idx2] = atof(token2);  
+      token2 = strtok(NULL, " ");  
+      idx2++;
+    }
   }
 }
 
-if (fgets(stri, sizeof(stri), fpi[1]) != NULL) {
-  // Read successful, process the line in strr
-  //printf("Read line: %s", stri);
-  char *token2 = strtok(stri, " ");
-  int idx2 = 0;
-
-  while (token2 != NULL && idx2 < taplen) {
-  mchannelModeli[idx2] = atof(token2);
-  token2 = strtok(NULL, " ");
-  idx2++;
+// --- jammer channel (UL): load this TTI's jammer taps, NULL-guarded, rewind on EOF ---
+float jamr[128] = {0}, jami[128] = {0};
+if (jam_enable && fpr_jam[1] != NULL && fpi_jam[1] != NULL) {
+  char jstr_r[2000], jstr_i[2000];
+  if (fgets(jstr_r, sizeof(jstr_r), fpr_jam[1]) == NULL) {
+    rewind(fpr_jam[1]);
+    fgets(jstr_r, sizeof(jstr_r), fpr_jam[1]);
   }
+  char *jt = strtok(jstr_r, " ");
+  for (int j = 0; jt != NULL && j < jamtaplen && j < 128; j++) { jamr[j] = atof(jt); jt = strtok(NULL, " "); }
+  if (fgets(jstr_i, sizeof(jstr_i), fpi_jam[1]) == NULL) {
+    rewind(fpi_jam[1]);
+    fgets(jstr_i, sizeof(jstr_i), fpi_jam[1]);
+  }
+  jt = strtok(jstr_i, " ");
+  for (int j = 0; jt != NULL && j < jamtaplen && j < 128; j++) { jami[j] = atof(jt); jt = strtok(NULL, " "); }
 }
 
 // // clock_gettime(CLOCK_REALTIME, &start); // Log start time
@@ -409,23 +502,9 @@ if (fgets(stri, sizeof(stri), fpi[1]) != NULL) {
 // //   timing_array_index = timing_array_index + 1;  
 // // }
 
-// --- TXDBG: one-shot diagnostic written to a mounted file (survives container teardown) ---
-static FILE *txdbgf = NULL;
-static long txdbg_calls = 0;
-txdbg_calls++;
-if (txdbg_calls == 1) {
-  txdbgf = fopen("/opt/tt-ran/tt/logs/txdbg.txt", "w");
-  if (txdbgf) {
-    fprintf(txdbgf, "TXDBG txAddInput: taplen=%d dd=%lu ploss=%.4f noise=%.6f Dopp_inc=%.6g "
-                    "taps_r=[%.3f %.3f %.3f] taps_i=[%.3f %.3f %.3f] nbSamples=%d\n",
-            taplen, (unsigned long)dd, pathLossLinear, noise_per_sample,
-            (double)channelDesc->Doppler_phase_inc,
-            mchannelModelr[0], mchannelModelr[1], mchannelModelr[2],
-            mchannelModeli[0], mchannelModeli[1], mchannelModeli[2], nbSamples);
-    fflush(txdbgf);
-  }
-}
-
+// jammer white-noise history ring (UL), per call; last jamtaplen samples used
+double jnhist_r[128] = {0}, jnhist_i[128] = {0};
+int jhpos = 0;
 for (int i=0; i<nbSamples; i++) {
 
 struct complex16 *out_ptr=after_channel_sig+i;
@@ -435,13 +514,16 @@ struct complexd rx_tmp= {0};
 
 for (int l = 0; l<taplen; l++) {
 
+// input_sig is ONLY the current TX block ([0..nbSamples)), with no inter-block history.
+// The old code did ((i-l-dd)+CirSize)%CirSize, so for i-l-dd < 0 it wrapped to ~CirSize and
+// read far out of bounds of input_sig (garbage) — harmless at taplen=1 (only l=0 is read),
+// but with taplen>=2 every block's first `taplen` samples got corrupted, which broke SISO
+// UL (RACH/PUSCH) attach. Skip taps with no in-block history instead (treat input as 0);
+// the echo then applies to the rest of the block, so a multi-tap UL comes through.
+const int sidx = (int)i - l - (int)dd;
+if (sidx < 0 || sidx >= nbSamples) continue;
 
-const long j = (long)i - (long)l - (long)dd;
-if (j < 0) continue;   // sample is before the start of this block: no history, skip this tap
-
-
-
-const struct complex16 tx16 = input_sig[j];
+const struct complex16 tx16 = input_sig[sidx];
 // // rx_tmp.r += tx16.r * channelModel[l].r - tx16.i * channelModel[l].i;
 // // rx_tmp.i += tx16.i * channelModel[l].r + tx16.r * channelModel[l].i;
 rx_tmp.r += tx16.r * mchannelModelr[l] - tx16.i * mchannelModeli[l];
@@ -465,29 +547,25 @@ rx_tmp.i = cimag(out);
 channelDesc->Doppler_phase_cur[rxAnt] += channelDesc->Doppler_phase_inc;
 }
 
-out_ptr->r = lround(rx_tmp.r*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0));
-out_ptr->i = lround(rx_tmp.i*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0));
- out_ptr++;
+// --- jammer (UL): fresh white noise pushed through the jammer taps ---
+double jam_r = 0.0, jam_i = 0.0;
+if (jam_enable) {
+  jnhist_r[jhpos] = gaussZiggurat(0.0, 1.0);
+  jnhist_i[jhpos] = gaussZiggurat(0.0, 1.0);
+  for (int l = 0; l < jamtaplen && l < 128; l++) {
+    const int hp = (jhpos - l + 128) % 128;
+    const double sr = jnhist_r[hp], si = jnhist_i[hp];
+    jam_r += jamr[l]*sr - jami[l]*si;
+    jam_i += jamr[l]*si + jami[l]*sr;
+  }
+  jhpos = (jhpos + 1) % 128;
+  jam_r *= jam_gain;
+  jam_i *= jam_gain;
 }
 
-// --- TXDBG: on signal-bearing blocks, is the output identical to the input? ---
-static int txdbg_sig_logged = 0;
-if (txdbgf && txdbg_sig_logged < 12) {
-  long ein = 0, ediff = 0, maxabs = 0;
-  for (int k = 0; k < nbSamples; k++) {
-    ein   += (long)input_sig[k].r*input_sig[k].r + (long)input_sig[k].i*input_sig[k].i;
-    int dr = after_channel_sig[k].r - input_sig[k].r;
-    int di = after_channel_sig[k].i - input_sig[k].i;
-    ediff += (long)dr*dr + (long)di*di;
-    long a = after_channel_sig[k].r; if (a < 0) a = -a; if (a > maxabs) maxabs = a;
-    long b = after_channel_sig[k].i; if (b < 0) b = -b; if (b > maxabs) maxabs = b;
-  }
-  if (ein > 0) {   // only log blocks where the UE is actually transmitting
-    txdbg_sig_logged++;
-    fprintf(txdbgf, "TXDBG sig[%d] call=%ld: in=%ld |out-in|^2=%ld out_maxabs=%ld\n",
-            txdbg_sig_logged, txdbg_calls, ein, ediff, maxabs);
-    fflush(txdbgf);
-  }
+out_ptr->r = lround(rx_tmp.r*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0) + jam_r);
+out_ptr->i = lround(rx_tmp.i*pathLossLinear + noise_per_sample*gaussZiggurat(0.0,1.0) + jam_i);
+ out_ptr++;
 }
 
 }

@@ -178,6 +178,9 @@ class UeMetrics final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kUlChannelFieldNumber = 9,
+    kUlChannelLsFieldNumber = 12,
+    kSrsChannelFieldNumber = 15,
     kRntiFieldNumber = 1,
     kCqiFieldNumber = 2,
     kSnrFieldNumber = 3,
@@ -186,7 +189,79 @@ class UeMetrics final :
     kDlBufferFieldNumber = 6,
     kUlBufferFieldNumber = 7,
     kDlTbsFieldNumber = 8,
+    kUlChannelNrxFieldNumber = 10,
+    kUlChannelNscFieldNumber = 11,
+    kUlChannelLsNrxFieldNumber = 13,
+    kUlChannelLsNscFieldNumber = 14,
+    kSrsChannelNrxFieldNumber = 16,
+    kSrsChannelNscFieldNumber = 17,
   };
+  // repeated float ul_channel = 9;
+  int ul_channel_size() const;
+  private:
+  int _internal_ul_channel_size() const;
+  public:
+  void clear_ul_channel();
+  private:
+  float _internal_ul_channel(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      _internal_ul_channel() const;
+  void _internal_add_ul_channel(float value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      _internal_mutable_ul_channel();
+  public:
+  float ul_channel(int index) const;
+  void set_ul_channel(int index, float value);
+  void add_ul_channel(float value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      ul_channel() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      mutable_ul_channel();
+
+  // repeated float ul_channel_ls = 12;
+  int ul_channel_ls_size() const;
+  private:
+  int _internal_ul_channel_ls_size() const;
+  public:
+  void clear_ul_channel_ls();
+  private:
+  float _internal_ul_channel_ls(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      _internal_ul_channel_ls() const;
+  void _internal_add_ul_channel_ls(float value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      _internal_mutable_ul_channel_ls();
+  public:
+  float ul_channel_ls(int index) const;
+  void set_ul_channel_ls(int index, float value);
+  void add_ul_channel_ls(float value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      ul_channel_ls() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      mutable_ul_channel_ls();
+
+  // repeated float srs_channel = 15;
+  int srs_channel_size() const;
+  private:
+  int _internal_srs_channel_size() const;
+  public:
+  void clear_srs_channel();
+  private:
+  float _internal_srs_channel(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      _internal_srs_channel() const;
+  void _internal_add_srs_channel(float value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      _internal_mutable_srs_channel();
+  public:
+  float srs_channel(int index) const;
+  void set_srs_channel(int index, float value);
+  void add_srs_channel(float value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      srs_channel() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      mutable_srs_channel();
+
   // uint32 rnti = 1;
   void clear_rnti();
   uint32_t rnti() const;
@@ -259,6 +334,60 @@ class UeMetrics final :
   void _internal_set_dl_tbs(float value);
   public:
 
+  // uint32 ul_channel_nrx = 10;
+  void clear_ul_channel_nrx();
+  uint32_t ul_channel_nrx() const;
+  void set_ul_channel_nrx(uint32_t value);
+  private:
+  uint32_t _internal_ul_channel_nrx() const;
+  void _internal_set_ul_channel_nrx(uint32_t value);
+  public:
+
+  // uint32 ul_channel_nsc = 11;
+  void clear_ul_channel_nsc();
+  uint32_t ul_channel_nsc() const;
+  void set_ul_channel_nsc(uint32_t value);
+  private:
+  uint32_t _internal_ul_channel_nsc() const;
+  void _internal_set_ul_channel_nsc(uint32_t value);
+  public:
+
+  // uint32 ul_channel_ls_nrx = 13;
+  void clear_ul_channel_ls_nrx();
+  uint32_t ul_channel_ls_nrx() const;
+  void set_ul_channel_ls_nrx(uint32_t value);
+  private:
+  uint32_t _internal_ul_channel_ls_nrx() const;
+  void _internal_set_ul_channel_ls_nrx(uint32_t value);
+  public:
+
+  // uint32 ul_channel_ls_nsc = 14;
+  void clear_ul_channel_ls_nsc();
+  uint32_t ul_channel_ls_nsc() const;
+  void set_ul_channel_ls_nsc(uint32_t value);
+  private:
+  uint32_t _internal_ul_channel_ls_nsc() const;
+  void _internal_set_ul_channel_ls_nsc(uint32_t value);
+  public:
+
+  // uint32 srs_channel_nrx = 16;
+  void clear_srs_channel_nrx();
+  uint32_t srs_channel_nrx() const;
+  void set_srs_channel_nrx(uint32_t value);
+  private:
+  uint32_t _internal_srs_channel_nrx() const;
+  void _internal_set_srs_channel_nrx(uint32_t value);
+  public:
+
+  // uint32 srs_channel_nsc = 17;
+  void clear_srs_channel_nsc();
+  uint32_t srs_channel_nsc() const;
+  void set_srs_channel_nsc(uint32_t value);
+  private:
+  uint32_t _internal_srs_channel_nsc() const;
+  void _internal_set_srs_channel_nsc(uint32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:UeMetrics)
  private:
   class _Internal;
@@ -267,6 +396,9 @@ class UeMetrics final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< float > ul_channel_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< float > ul_channel_ls_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< float > srs_channel_;
     uint32_t rnti_;
     uint32_t cqi_;
     float snr_;
@@ -275,6 +407,12 @@ class UeMetrics final :
     uint32_t dl_buffer_;
     uint32_t ul_buffer_;
     float dl_tbs_;
+    uint32_t ul_channel_nrx_;
+    uint32_t ul_channel_nsc_;
+    uint32_t ul_channel_ls_nrx_;
+    uint32_t ul_channel_ls_nsc_;
+    uint32_t srs_channel_nrx_;
+    uint32_t srs_channel_nsc_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -617,6 +755,267 @@ inline void UeMetrics::_internal_set_dl_tbs(float value) {
 inline void UeMetrics::set_dl_tbs(float value) {
   _internal_set_dl_tbs(value);
   // @@protoc_insertion_point(field_set:UeMetrics.dl_tbs)
+}
+
+// repeated float ul_channel = 9;
+inline int UeMetrics::_internal_ul_channel_size() const {
+  return _impl_.ul_channel_.size();
+}
+inline int UeMetrics::ul_channel_size() const {
+  return _internal_ul_channel_size();
+}
+inline void UeMetrics::clear_ul_channel() {
+  _impl_.ul_channel_.Clear();
+}
+inline float UeMetrics::_internal_ul_channel(int index) const {
+  return _impl_.ul_channel_.Get(index);
+}
+inline float UeMetrics::ul_channel(int index) const {
+  // @@protoc_insertion_point(field_get:UeMetrics.ul_channel)
+  return _internal_ul_channel(index);
+}
+inline void UeMetrics::set_ul_channel(int index, float value) {
+  _impl_.ul_channel_.Set(index, value);
+  // @@protoc_insertion_point(field_set:UeMetrics.ul_channel)
+}
+inline void UeMetrics::_internal_add_ul_channel(float value) {
+  _impl_.ul_channel_.Add(value);
+}
+inline void UeMetrics::add_ul_channel(float value) {
+  _internal_add_ul_channel(value);
+  // @@protoc_insertion_point(field_add:UeMetrics.ul_channel)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+UeMetrics::_internal_ul_channel() const {
+  return _impl_.ul_channel_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+UeMetrics::ul_channel() const {
+  // @@protoc_insertion_point(field_list:UeMetrics.ul_channel)
+  return _internal_ul_channel();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+UeMetrics::_internal_mutable_ul_channel() {
+  return &_impl_.ul_channel_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+UeMetrics::mutable_ul_channel() {
+  // @@protoc_insertion_point(field_mutable_list:UeMetrics.ul_channel)
+  return _internal_mutable_ul_channel();
+}
+
+// uint32 ul_channel_nrx = 10;
+inline void UeMetrics::clear_ul_channel_nrx() {
+  _impl_.ul_channel_nrx_ = 0u;
+}
+inline uint32_t UeMetrics::_internal_ul_channel_nrx() const {
+  return _impl_.ul_channel_nrx_;
+}
+inline uint32_t UeMetrics::ul_channel_nrx() const {
+  // @@protoc_insertion_point(field_get:UeMetrics.ul_channel_nrx)
+  return _internal_ul_channel_nrx();
+}
+inline void UeMetrics::_internal_set_ul_channel_nrx(uint32_t value) {
+  
+  _impl_.ul_channel_nrx_ = value;
+}
+inline void UeMetrics::set_ul_channel_nrx(uint32_t value) {
+  _internal_set_ul_channel_nrx(value);
+  // @@protoc_insertion_point(field_set:UeMetrics.ul_channel_nrx)
+}
+
+// uint32 ul_channel_nsc = 11;
+inline void UeMetrics::clear_ul_channel_nsc() {
+  _impl_.ul_channel_nsc_ = 0u;
+}
+inline uint32_t UeMetrics::_internal_ul_channel_nsc() const {
+  return _impl_.ul_channel_nsc_;
+}
+inline uint32_t UeMetrics::ul_channel_nsc() const {
+  // @@protoc_insertion_point(field_get:UeMetrics.ul_channel_nsc)
+  return _internal_ul_channel_nsc();
+}
+inline void UeMetrics::_internal_set_ul_channel_nsc(uint32_t value) {
+  
+  _impl_.ul_channel_nsc_ = value;
+}
+inline void UeMetrics::set_ul_channel_nsc(uint32_t value) {
+  _internal_set_ul_channel_nsc(value);
+  // @@protoc_insertion_point(field_set:UeMetrics.ul_channel_nsc)
+}
+
+// repeated float ul_channel_ls = 12;
+inline int UeMetrics::_internal_ul_channel_ls_size() const {
+  return _impl_.ul_channel_ls_.size();
+}
+inline int UeMetrics::ul_channel_ls_size() const {
+  return _internal_ul_channel_ls_size();
+}
+inline void UeMetrics::clear_ul_channel_ls() {
+  _impl_.ul_channel_ls_.Clear();
+}
+inline float UeMetrics::_internal_ul_channel_ls(int index) const {
+  return _impl_.ul_channel_ls_.Get(index);
+}
+inline float UeMetrics::ul_channel_ls(int index) const {
+  // @@protoc_insertion_point(field_get:UeMetrics.ul_channel_ls)
+  return _internal_ul_channel_ls(index);
+}
+inline void UeMetrics::set_ul_channel_ls(int index, float value) {
+  _impl_.ul_channel_ls_.Set(index, value);
+  // @@protoc_insertion_point(field_set:UeMetrics.ul_channel_ls)
+}
+inline void UeMetrics::_internal_add_ul_channel_ls(float value) {
+  _impl_.ul_channel_ls_.Add(value);
+}
+inline void UeMetrics::add_ul_channel_ls(float value) {
+  _internal_add_ul_channel_ls(value);
+  // @@protoc_insertion_point(field_add:UeMetrics.ul_channel_ls)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+UeMetrics::_internal_ul_channel_ls() const {
+  return _impl_.ul_channel_ls_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+UeMetrics::ul_channel_ls() const {
+  // @@protoc_insertion_point(field_list:UeMetrics.ul_channel_ls)
+  return _internal_ul_channel_ls();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+UeMetrics::_internal_mutable_ul_channel_ls() {
+  return &_impl_.ul_channel_ls_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+UeMetrics::mutable_ul_channel_ls() {
+  // @@protoc_insertion_point(field_mutable_list:UeMetrics.ul_channel_ls)
+  return _internal_mutable_ul_channel_ls();
+}
+
+// uint32 ul_channel_ls_nrx = 13;
+inline void UeMetrics::clear_ul_channel_ls_nrx() {
+  _impl_.ul_channel_ls_nrx_ = 0u;
+}
+inline uint32_t UeMetrics::_internal_ul_channel_ls_nrx() const {
+  return _impl_.ul_channel_ls_nrx_;
+}
+inline uint32_t UeMetrics::ul_channel_ls_nrx() const {
+  // @@protoc_insertion_point(field_get:UeMetrics.ul_channel_ls_nrx)
+  return _internal_ul_channel_ls_nrx();
+}
+inline void UeMetrics::_internal_set_ul_channel_ls_nrx(uint32_t value) {
+  
+  _impl_.ul_channel_ls_nrx_ = value;
+}
+inline void UeMetrics::set_ul_channel_ls_nrx(uint32_t value) {
+  _internal_set_ul_channel_ls_nrx(value);
+  // @@protoc_insertion_point(field_set:UeMetrics.ul_channel_ls_nrx)
+}
+
+// uint32 ul_channel_ls_nsc = 14;
+inline void UeMetrics::clear_ul_channel_ls_nsc() {
+  _impl_.ul_channel_ls_nsc_ = 0u;
+}
+inline uint32_t UeMetrics::_internal_ul_channel_ls_nsc() const {
+  return _impl_.ul_channel_ls_nsc_;
+}
+inline uint32_t UeMetrics::ul_channel_ls_nsc() const {
+  // @@protoc_insertion_point(field_get:UeMetrics.ul_channel_ls_nsc)
+  return _internal_ul_channel_ls_nsc();
+}
+inline void UeMetrics::_internal_set_ul_channel_ls_nsc(uint32_t value) {
+  
+  _impl_.ul_channel_ls_nsc_ = value;
+}
+inline void UeMetrics::set_ul_channel_ls_nsc(uint32_t value) {
+  _internal_set_ul_channel_ls_nsc(value);
+  // @@protoc_insertion_point(field_set:UeMetrics.ul_channel_ls_nsc)
+}
+
+// repeated float srs_channel = 15;
+inline int UeMetrics::_internal_srs_channel_size() const {
+  return _impl_.srs_channel_.size();
+}
+inline int UeMetrics::srs_channel_size() const {
+  return _internal_srs_channel_size();
+}
+inline void UeMetrics::clear_srs_channel() {
+  _impl_.srs_channel_.Clear();
+}
+inline float UeMetrics::_internal_srs_channel(int index) const {
+  return _impl_.srs_channel_.Get(index);
+}
+inline float UeMetrics::srs_channel(int index) const {
+  // @@protoc_insertion_point(field_get:UeMetrics.srs_channel)
+  return _internal_srs_channel(index);
+}
+inline void UeMetrics::set_srs_channel(int index, float value) {
+  _impl_.srs_channel_.Set(index, value);
+  // @@protoc_insertion_point(field_set:UeMetrics.srs_channel)
+}
+inline void UeMetrics::_internal_add_srs_channel(float value) {
+  _impl_.srs_channel_.Add(value);
+}
+inline void UeMetrics::add_srs_channel(float value) {
+  _internal_add_srs_channel(value);
+  // @@protoc_insertion_point(field_add:UeMetrics.srs_channel)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+UeMetrics::_internal_srs_channel() const {
+  return _impl_.srs_channel_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+UeMetrics::srs_channel() const {
+  // @@protoc_insertion_point(field_list:UeMetrics.srs_channel)
+  return _internal_srs_channel();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+UeMetrics::_internal_mutable_srs_channel() {
+  return &_impl_.srs_channel_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+UeMetrics::mutable_srs_channel() {
+  // @@protoc_insertion_point(field_mutable_list:UeMetrics.srs_channel)
+  return _internal_mutable_srs_channel();
+}
+
+// uint32 srs_channel_nrx = 16;
+inline void UeMetrics::clear_srs_channel_nrx() {
+  _impl_.srs_channel_nrx_ = 0u;
+}
+inline uint32_t UeMetrics::_internal_srs_channel_nrx() const {
+  return _impl_.srs_channel_nrx_;
+}
+inline uint32_t UeMetrics::srs_channel_nrx() const {
+  // @@protoc_insertion_point(field_get:UeMetrics.srs_channel_nrx)
+  return _internal_srs_channel_nrx();
+}
+inline void UeMetrics::_internal_set_srs_channel_nrx(uint32_t value) {
+  
+  _impl_.srs_channel_nrx_ = value;
+}
+inline void UeMetrics::set_srs_channel_nrx(uint32_t value) {
+  _internal_set_srs_channel_nrx(value);
+  // @@protoc_insertion_point(field_set:UeMetrics.srs_channel_nrx)
+}
+
+// uint32 srs_channel_nsc = 17;
+inline void UeMetrics::clear_srs_channel_nsc() {
+  _impl_.srs_channel_nsc_ = 0u;
+}
+inline uint32_t UeMetrics::_internal_srs_channel_nsc() const {
+  return _impl_.srs_channel_nsc_;
+}
+inline uint32_t UeMetrics::srs_channel_nsc() const {
+  // @@protoc_insertion_point(field_get:UeMetrics.srs_channel_nsc)
+  return _internal_srs_channel_nsc();
+}
+inline void UeMetrics::_internal_set_srs_channel_nsc(uint32_t value) {
+  
+  _impl_.srs_channel_nsc_ = value;
+}
+inline void UeMetrics::set_srs_channel_nsc(uint32_t value) {
+  _internal_set_srs_channel_nsc(value);
+  // @@protoc_insertion_point(field_set:UeMetrics.srs_channel_nsc)
 }
 
 // -------------------------------------------------------------------

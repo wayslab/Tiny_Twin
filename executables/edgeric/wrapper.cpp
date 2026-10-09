@@ -83,6 +83,30 @@ void ric_set_snr(EdgeRIC *r, uint16_t rnti, float snr)
 	obj->set_snr(rnti, snr);
 }
 
+void ric_set_channel(EdgeRIC *r, uint16_t rnti, const float* buf, int n, uint32_t nrx, uint32_t nsc)
+{
+    edgeric *obj;
+    if (r == NULL || buf == NULL || n <= 0) return;
+    obj = static_cast<edgeric *>(r->obj);
+    obj->set_channel(rnti, std::vector<float>(buf, buf + n), nrx, nsc);
+}
+
+void ric_set_channel_ls(EdgeRIC *r, uint16_t rnti, const float* buf, int n, uint32_t nrx, uint32_t nsc)
+{
+    edgeric *obj;
+    if (r == NULL || buf == NULL || n <= 0) return;
+    obj = static_cast<edgeric *>(r->obj);
+    obj->set_channel_ls(rnti, std::vector<float>(buf, buf + n), nrx, nsc);
+}
+
+void ric_set_srs_channel(EdgeRIC *r, uint16_t rnti, const float* buf, int n, uint32_t nrx, uint32_t nsc)
+{
+    edgeric *obj;
+    if (r == NULL || buf == NULL || n <= 0) return;
+    obj = static_cast<edgeric *>(r->obj);
+    obj->set_srs_channel(rnti, std::vector<float>(buf, buf + n), nrx, nsc);
+}
+
 void ric_set_ul_buffer(EdgeRIC *r, uint16_t rnti, uint32_t ul_buffer)
 {
     edgeric *obj;

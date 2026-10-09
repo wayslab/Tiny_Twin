@@ -1,0 +1,40 @@
+Trajectory_1 parameters:
+
+rx_locations = np.array([0, 11, -1]) 
+tx_locations = np.array([0, 0, -1])
+
+obj_pos = np.array([100, 200, -0.9]) # Initial position of the object in static environment
+obj_pos_dynamic = np.array([3.8, 5.25, -0.9]) # Initial position of the object in static environment
+obj_dim = np.array([0.25, 0.5, 1.8]) # Object dimension
+
+K = 100 # No. of times the simulation will run
+Te = 0.08 # Seconds between successive simulation runs
+v_0 = np.array([1, 0.25, 0]) # Speed of the object in m/s
+
+
+Trajectory_2 parameters:
+
+rx_locations = np.array([0, 11, -1]) 
+tx_locations = np.array([0, 0, -1])
+
+obj_pos = np.array([100, 200, -0.9]) # Initial position of the object in static environment
+obj_pos_dynamic = np.array([-3.8, 5.25, -0.9]) # Initial position of the object in static environment
+obj_dim = np.array([0.25, 0.5, 1.8]) # Object dimension
+
+K = 100 # No. of times the simulation will run
+Te = 0.08 # Seconds between successive simulation runs
+v_0 = np.array([-1, 0.25, 0]) # Speed of the object in m/s
+
+
+Trajectory_3 parameters:
+
+rx_locations = np.array([0, 11, -1]) 
+tx_locations = np.array([0, 0, -1])
+
+obj_pos = np.array([100, 200, -0.9]) # Initial position of the object in static environment
+obj_pos_dynamic = np.array([4, 5.8, -0.9]) # Initial position of the object in static environment
+obj_dim = np.array([0.25, 0.5, 1.8]) # Object dimension
+
+K = 100 # No. of times the simulation will run
+Te = 0.08 # Seconds between successive simulation runs
+v_0 = np.array([0, -0.17, 0]) # Speed of the object in m/s

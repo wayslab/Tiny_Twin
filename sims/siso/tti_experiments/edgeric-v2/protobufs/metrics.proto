@@ -9,6 +9,24 @@ message UeMetrics {
     uint32 dl_buffer = 6;
     uint32 ul_buffer = 7;
     float dl_tbs = 8;
+    // MIMO-RIC channel measurement: downsampled per-antenna UL channel estimate,
+    // flattened as [rx_antenna][subcarrier] interleaved real,imag (2 floats per sample).
+    repeated float ul_channel = 9;
+    uint32 ul_channel_nrx = 10;  // number of rx antennas in the flattened array
+    uint32 ul_channel_nsc = 11;  // number of subcarriers per antenna
+    // Raw LS (pre-interpolation-filter) per-antenna UL channel estimate, same flattening
+    // as ul_channel. This is the un-smoothed DMRS least-squares CFR, so a multi-tap
+    // ground-truth channel stays visible (the filtered ul_channel collapses to one delay).
+    repeated float ul_channel_ls = 12;
+    uint32 ul_channel_ls_nrx = 13;
+    uint32 ul_channel_ls_nsc = 14;
+    // SRS-RIC: per-antenna UL channel from the SRS codebook channel IQ matrix,
+    // flattened [gnb_rx_antenna][prg] interleaved real,imag (UE SRS port 0).
+    // nrx = num_gnb_antenna_elements, nsc = num_prgs. SRS is wideband + periodic
+    // (sounds the whole band regardless of the PUSCH grant), unlike DMRS ul_channel.
+    repeated float srs_channel = 15;
+    uint32 srs_channel_nrx = 16;
+    uint32 srs_channel_nsc = 17;
 }
 
 message Metrics {

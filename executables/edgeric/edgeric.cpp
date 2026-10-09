@@ -44,6 +44,15 @@ std::map<uint16_t, float> edgeric::tx_bytes = {};
 std::map<uint16_t, uint32_t> edgeric::ue_ul_buffers = {};
 std::map<uint16_t, uint32_t> edgeric::ue_dl_buffers = {};
 std::map<uint16_t, float> edgeric::dl_tbs_ues = {};
+std::map<uint16_t, std::vector<float>> edgeric::ue_channel = {};
+std::map<uint16_t, uint32_t> edgeric::ue_channel_nrx = {};
+std::map<uint16_t, uint32_t> edgeric::ue_channel_nsc = {};
+std::map<uint16_t, std::vector<float>> edgeric::ue_channel_ls = {};
+std::map<uint16_t, uint32_t> edgeric::ue_channel_ls_nrx = {};
+std::map<uint16_t, uint32_t> edgeric::ue_channel_ls_nsc = {};
+std::map<uint16_t, std::vector<float>> edgeric::ue_srs_channel = {};
+std::map<uint16_t, uint32_t> edgeric::ue_srs_channel_nrx = {};
+std::map<uint16_t, uint32_t> edgeric::ue_srs_channel_nsc = {};
 
 // std::map<uint16_t, float> edgeric::weights_recved = {};
 std::map<uint16_t, float> edgeric::weights_recved = {};
@@ -155,6 +164,32 @@ void edgeric::send_to_er() {
         // Set UL Buffer, default to 0 if not available
         auto dl_tbs_it = dl_tbs_ues.find(rnti);
         ue_metrics->set_dl_tbs((dl_tbs_it != dl_tbs_ues.end()) ? dl_tbs_it->second : 0);
+
+        // MIMO-RIC (Piece 1): attach the downsampled per-antenna UL channel, if a snapshot exists.
+        // ue_channel is NOT cleared after send (unlike the other maps) so the latest snapshot rides
+        // every report — the subscriber uses ZMQ CONFLATE (latest-only) and would else miss it.
+        auto ch_it = ue_channel.find(rnti);
+        if (ch_it != ue_channel.end()) {
+            for (float s : ch_it->second) ue_metrics->add_ul_channel(s);
+            ue_metrics->set_ul_channel_nrx(ue_channel_nrx.count(rnti) ? ue_channel_nrx[rnti] : 0);
+            ue_metrics->set_ul_channel_nsc(ue_channel_nsc.count(rnti) ? ue_channel_nsc[rnti] : 0);
+        }
+
+        // MIMO-RIC (Piece 1b): attach the raw LS (pre-filter) per-antenna UL channel, if present.
+        auto ls_it = ue_channel_ls.find(rnti);
+        if (ls_it != ue_channel_ls.end()) {
+            for (float s : ls_it->second) ue_metrics->add_ul_channel_ls(s);
+            ue_metrics->set_ul_channel_ls_nrx(ue_channel_ls_nrx.count(rnti) ? ue_channel_ls_nrx[rnti] : 0);
+            ue_metrics->set_ul_channel_ls_nsc(ue_channel_ls_nsc.count(rnti) ? ue_channel_ls_nsc[rnti] : 0);
+        }
+
+        // SRS-RIC: attach the per-antenna SRS codebook channel, if a snapshot exists.
+        auto srs_it = ue_srs_channel.find(rnti);
+        if (srs_it != ue_srs_channel.end()) {
+            for (float s : srs_it->second) ue_metrics->add_srs_channel(s);
+            ue_metrics->set_srs_channel_nrx(ue_srs_channel_nrx.count(rnti) ? ue_srs_channel_nrx[rnti] : 0);
+            ue_metrics->set_srs_channel_nsc(ue_srs_channel_nsc.count(rnti) ? ue_srs_channel_nsc[rnti] : 0);
+        }
     }
 
     // Serialize the Metrics message to a string
@@ -180,6 +215,8 @@ void edgeric::send_to_er() {
      tx_bytes.clear();
      rx_bytes.clear();
      dl_tbs_ues.clear();
+     // NOTE: do NOT clear ue_channel — keep the latest snapshot so it rides EVERY report
+     // (the subscriber uses ZMQ CONFLATE = latest-only, so a 1-in-50 message would be missed).
     //  ue_dl_buffers.clear();
     //  ue_ul_buffers.clear();
     

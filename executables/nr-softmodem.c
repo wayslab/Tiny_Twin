@@ -132,6 +132,11 @@ extern int tti_counter;
 FILE *fplog2;
 FILE *fpi[50];
 FILE *fpr[50];
+// jammer tap handles (declared so apply_channelmod.c's externs resolve). The gNB
+// deliberately leaves these NULL: it never applies the channel/jammer (gnb1_ue0==1),
+// and opening 100 extra fds would push the rfsim socket fd past MAX_FD_RFSIMU.
+FILE *fpr_jam[50];
+FILE *fpi_jam[50];
 FILE *fplog;
 FILE *fplog3;
 FILE *fplog4;

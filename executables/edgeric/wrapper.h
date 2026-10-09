@@ -18,6 +18,11 @@ void ric_set_dl_buffer(EdgeRIC *r, uint16_t rnti, uint32_t dl_buffer);
 void ric_set_tx_bytes(EdgeRIC *r, uint16_t rnti, float tbs);
 void ric_set_rx_bytes(EdgeRIC *r, uint16_t rnti, float tbs);
 void ric_set_dl_tbs(EdgeRIC *r, uint16_t rnti, float tbs);
+// MIMO-RIC: push a full-resolution per-antenna UL channel snapshot (buf = n floats, re,im interleaved)
+void ric_set_channel(EdgeRIC *r, uint16_t rnti, const float* buf, int n, uint32_t nrx, uint32_t nsc);
+// MIMO-RIC: push the raw LS (pre-filter) per-antenna UL channel snapshot, same flattening
+void ric_set_channel_ls(EdgeRIC *r, uint16_t rnti, const float* buf, int n, uint32_t nrx, uint32_t nsc);
+void ric_set_srs_channel(EdgeRIC *r, uint16_t rnti, const float* buf, int n, uint32_t nrx, uint32_t nsc);
 
 //////////////////////////////////// ZMQ function to send RT-E2 Report 
 void ric_send_to_er(EdgeRIC *r);
