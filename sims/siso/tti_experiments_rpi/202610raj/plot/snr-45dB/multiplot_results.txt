@@ -1,0 +1,76 @@
+{
+  "title": "202610raj UL metrics \u2014 AI53_017 path A/B gt/2nn/nerf (--snr 45)",
+  "note": "iperf received goodput; total_MB = integral of per-second rate",
+  "channels": {
+    "Path A GT": {
+      "ul": {
+        "mean_kbps": 15288.0,
+        "peak_kbps": 36594.0,
+        "total_MB": 200.66,
+        "duration_s": 105.0
+      },
+      "dl": {
+        "mean_kbps": 1044.8,
+        "peak_kbps": 1070.0,
+        "total_MB": 13.19,
+        "duration_s": 101.0
+      }
+    },
+    "Path A 2NN": {
+      "ul": {
+        "mean_kbps": 12352.3,
+        "peak_kbps": 42409.0,
+        "total_MB": 162.12,
+        "duration_s": 105.0
+      },
+      "dl": {
+        "mean_kbps": 1044.1,
+        "peak_kbps": 1152.0,
+        "total_MB": 13.18,
+        "duration_s": 101.0
+      }
+    },
+    "Path B GT": {
+      "ul": {
+        "mean_kbps": 21936.8,
+        "peak_kbps": 40880.0,
+        "total_MB": 287.92,
+        "duration_s": 105.0
+      },
+      "dl": {
+        "mean_kbps": 1044.7,
+        "peak_kbps": 1070.0,
+        "total_MB": 13.19,
+        "duration_s": 101.0
+      }
+    },
+    "Path B 2NN": {
+      "ul": {
+        "mean_kbps": 21865.4,
+        "peak_kbps": 37670.0,
+        "total_MB": 286.98,
+        "duration_s": 105.0
+      },
+      "dl": {
+        "mean_kbps": 1044.5,
+        "peak_kbps": 1058.0,
+        "total_MB": 13.19,
+        "duration_s": 101.0
+      }
+    },
+    "Path B NeRF": {
+      "ul": {
+        "mean_kbps": 22029.4,
+        "peak_kbps": 47964.0,
+        "total_MB": 289.14,
+        "duration_s": 105.0
+      },
+      "dl": {
+        "mean_kbps": 1044.6,
+        "peak_kbps": 1082.0,
+        "total_MB": 13.19,
+        "duration_s": 101.0
+      }
+    }
+  }
+}

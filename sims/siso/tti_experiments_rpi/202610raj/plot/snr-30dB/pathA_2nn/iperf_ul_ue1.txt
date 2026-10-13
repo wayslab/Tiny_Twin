@@ -1,0 +1,51 @@
+------------------------------------------------------------
+Server listening on TCP port 5212
+TCP window size:  128 KByte (default)
+------------------------------------------------------------
+[  1] local 192.168.70.135 port 5212 connected with 192.168.70.151 port 36344
+[ ID] Interval       Transfer     Bandwidth
+[  1] 0.0000-1.0000 sec  4957760 KBytes  40613967 Kbits/sec
+[  1] 1.0000-2.0000 sec  4052800 KBytes  33200541 Kbits/sec
+[  1] 2.0000-3.0000 sec  4618560 KBytes  37835241 Kbits/sec
+[  1] 3.0000-4.0000 sec  4287936 KBytes  35126775 Kbits/sec
+[  1] 4.0000-5.0000 sec  3860608 KBytes  31626101 Kbits/sec
+[  1] 5.0000-6.0000 sec  4028544 KBytes  33001832 Kbits/sec
+[  1] 6.0000-7.0000 sec  4449664 KBytes  36451647 Kbits/sec
+[  1] 7.0000-8.0000 sec  4518720 KBytes  37017351 Kbits/sec
+[  1] 8.0000-9.0000 sec  4611201 KBytes  37774956 Kbits/sec
+[  1] 9.0000-10.0000 sec  4348864 KBytes  35625897 Kbits/sec
+[  1] 10.0000-11.0000 sec  3851136 KBytes  31548506 Kbits/sec
+[  1] 11.0000-12.0000 sec  3736832 KBytes  30612128 Kbits/sec
+[  1] 12.0000-13.0000 sec  4413056 KBytes  36151755 Kbits/sec
+[  1] 13.0000-14.0000 sec  4049152 KBytes  33170653 Kbits/sec
+[  1] 14.0000-15.0000 sec  3720320 KBytes  30476861 Kbits/sec
+[  1] 15.0000-16.0000 sec  3727232 KBytes  30533485 Kbits/sec
+[  1] 16.0000-17.0000 sec  4182784 KBytes  34265367 Kbits/sec
+[  1] 17.0000-18.0000 sec  4084992 KBytes  33464254 Kbits/sec
+[  1] 18.0000-19.0000 sec  3544064 KBytes  29032972 Kbits/sec
+[  1] 19.0000-20.0000 sec  3409536 KBytes  27930919 Kbits/sec
+[  1] 20.0000-21.0000 sec  3216000 KBytes  26345472 Kbits/sec
+[  1] 21.0000-22.0000 sec  3412352 KBytes  27953988 Kbits/sec
+[  1] 22.0000-23.0000 sec  3293504 KBytes  26980382 Kbits/sec
+[  1] 23.0000-24.0000 sec  3294144 KBytes  26985631 Kbits/sec
+[  1] 24.0000-25.0000 sec  3156352 KBytes  25856836 Kbits/sec
+[  1] 25.0000-26.0000 sec  3552768 KBytes  29104275 Kbits/sec
+[  1] 26.0000-27.0000 sec  3254912 KBytes  26664239 Kbits/sec
+[  1] 27.0000-28.0000 sec  3358976 KBytes  27516731 Kbits/sec
+[  1] 28.0000-29.0000 sec  3364608 KBytes  27562869 Kbits/sec
+[  1] 29.0000-30.0000 sec  3239680 KBytes  26539459 Kbits/sec
+[  1] 30.0000-31.0000 sec  3073920 KBytes  25181553 Kbits/sec
+[  1] 31.0000-32.0000 sec  3455360 KBytes  28306309 Kbits/sec
+[  1] 32.0000-33.0000 sec  3054720 KBytes  25024266 Kbits/sec
+[  1] 33.0000-34.0000 sec  3235072 KBytes  26501710 Kbits/sec
+[  1] 34.0000-35.0000 sec  3225472 KBytes  26423067 Kbits/sec
+[  1] 35.0000-36.0000 sec  3213952 KBytes  26328695 Kbits/sec
+[  1] 36.0000-37.0000 sec  3181952 KBytes  26066551 Kbits/sec
+[  1] 37.0000-38.0000 sec  3397760 KBytes  27834450 Kbits/sec
+[  1] 38.0000-39.0000 sec  4187648 KBytes  34305212 Kbits/sec
+[  1] 39.0000-40.0000 sec  4115712 KBytes  33715913 Kbits/sec
+[  1] 40.0000-41.0000 sec  3983616 KBytes  32633782 Kbits/sec
+[  1] 41.0000-42.0000 sec  3939456 KBytes  32272024 Kbits/sec
+recv failed: Connection reset by peer
+[  1] 42.0000-42.6544 sec  2713600 KBytes  33967269 Kbits/sec
+[  1] 0.0000-42.6544 sec  160375297 KBytes  30800878 Kbits/sec

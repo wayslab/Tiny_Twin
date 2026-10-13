@@ -1,0 +1,18 @@
+# 202610raj UL - AI53_017 - 30 dB (all UDP 50M)
+# throughput window: 60-200 s (iperf time)
+# smoothing (tpt_smooth): 100 TTIs
+
+scenario            UL mean    UL peak    UL MB    DL mean    DL peak    DL MB  MCS(full)  UL secs
+--------------------------------------------------------------------------------------------------
+Path A GT             1186k     12277k    20.90       134k      1070k     2.36       15.9       20
+Path A 2NN            2321k     12936k    40.91       962k      1105k     4.81       15.5       38
+Path A NeRF           1926k     11125k    33.95       948k      1070k     4.98       14.5       39
+Path B GT            12781k     26260k   225.27      1049k      1105k    18.49       21.7      141
+Path B 2NN           13980k     25308k   246.40      1049k      1082k    18.48       22.2      141
+Path B NeRF            918k     12078k    16.17       102k      1223k     1.81       16.1       14
+
+UL/DL mean,peak in kbps (of per-second iperf goodput INSIDE the window).
+MB      = integral of per-second rate over the window.
+UL secs = # in-window seconds with UL goodput; if << window length the UL
+          stalled/ended early (e.g. TCP collapse on a weak link).
+MCS(full) = mean UL MCS over the WHOLE run (not just the window).

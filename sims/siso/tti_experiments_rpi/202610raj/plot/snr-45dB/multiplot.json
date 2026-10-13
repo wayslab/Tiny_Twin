@@ -1,0 +1,28 @@
+{
+  "_runcmd": "cd /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi && python3 multiplot.py 202610raj/plot/snr-30dB/multiplot.json",
+  "title": "202610raj UL metrics \u2014 AI53_017 path A/B gt/2nn/nerf (--snr 45)",
+  "out": "multiplot.png",
+  "_note_pathA_nerf": "EXCLUDED: pathA_nerf loses the UL link (RLF) at --snr 30 \u2014 attaches at 0.55 dB then hits a ~15 s fade to -19 dB; gNB logs zero UL MCS (empty snr.txt). See NERF_A_RLF.txt.",
+  "traces": [
+    {
+      "path": "pathA_gt/snr.txt",
+      "label": "Path A GT"
+    },
+    {
+      "path": "pathA_2nn/snr.txt",
+      "label": "Path A 2NN"
+    },
+    {
+      "path": "pathB_gt/snr.txt",
+      "label": "Path B GT"
+    },
+    {
+      "path": "pathB_2nn/snr.txt",
+      "label": "Path B 2NN"
+    },
+    {
+      "path": "pathB_nerf/snr.txt",
+      "label": "Path B NeRF"
+    }
+  ]
+}

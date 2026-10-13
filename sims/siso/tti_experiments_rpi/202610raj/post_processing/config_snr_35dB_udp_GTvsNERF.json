@@ -1,0 +1,14 @@
+{
+  "base_dir": "/home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/202610raj/plot/snr-35dB_udp",
+  "output_dir": "/home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/202610raj/post_processing/snr_35dB_udp_GTvsNERF",
+  "title": "202610raj UL - AI53_017 - 35 dB UDP - GT vs NeRF (Path A & B)",
+  "tpt_smooth": 100,
+  "throughput_window_s": [70, 200],
+  "residuals": false,
+  "scenarios": [
+    {"folder": "pathA_gt",   "label": "Path A GT"},
+    {"folder": "pathA_nerf", "label": "Path A NeRF"},
+    {"folder": "pathB_gt",   "label": "Path B GT"},
+    {"folder": "pathB_nerf", "label": "Path B NeRF"}
+  ]
+}

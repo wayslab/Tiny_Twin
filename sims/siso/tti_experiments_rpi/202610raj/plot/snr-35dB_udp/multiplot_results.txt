@@ -1,0 +1,90 @@
+{
+  "title": "202610raj UL metrics \u2014 AI53_017 path A/B gt/2nn/nerf (--snr 35)",
+  "note": "iperf received goodput; total_MB = integral of per-second rate",
+  "channels": {
+    "Path A GT": {
+      "ul": {
+        "mean_kbps": 4321.3,
+        "peak_kbps": 21674.0,
+        "total_MB": 164.75,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 291.2,
+        "peak_kbps": 1105.0,
+        "total_MB": 10.96,
+        "duration_s": 301.0
+      }
+    },
+    "Path A 2NN": {
+      "ul": {
+        "mean_kbps": 5050.7,
+        "peak_kbps": 22497.0,
+        "total_MB": 195.08,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 347.2,
+        "peak_kbps": 1117.0,
+        "total_MB": 13.07,
+        "duration_s": 301.0
+      }
+    },
+    "Path A NeRF": {
+      "ul": {
+        "mean_kbps": 2854.8,
+        "peak_kbps": 20345.0,
+        "total_MB": 181.28,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1006.1,
+        "peak_kbps": 1094.0,
+        "total_MB": 12.83,
+        "duration_s": 102.0
+      }
+    },
+    "Path B GT": {
+      "ul": {
+        "mean_kbps": 19727.1,
+        "peak_kbps": 28412.0,
+        "total_MB": 752.1,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.3,
+        "peak_kbps": 1094.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path B 2NN": {
+      "ul": {
+        "mean_kbps": 20224.2,
+        "peak_kbps": 28259.0,
+        "total_MB": 771.05,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.4,
+        "peak_kbps": 1105.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path B NeRF": {
+      "ul": {
+        "mean_kbps": 19114.7,
+        "peak_kbps": 28153.0,
+        "total_MB": 738.3,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.3,
+        "peak_kbps": 1117.0,
+        "total_MB": 39.4,
+        "duration_s": 301.0
+      }
+    }
+  }
+}

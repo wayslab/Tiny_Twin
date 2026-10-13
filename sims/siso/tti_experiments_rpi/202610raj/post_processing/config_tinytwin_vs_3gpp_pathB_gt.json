@@ -1,0 +1,11 @@
+{
+  "run_dir": "/home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/202610raj/plot/snr-35dB_udp/pathB_gt",
+  "output_dir": "/home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/202610raj/post_processing/snr_35dB_pathB",
+  "label": "Path B GT - 35 dB (UDP)",
+  "alpha": 0.4,
+  "N_PRB": 106,
+  "SC_per_PRB": 12,
+  "SCS_Hz": 30000,
+  "ul_slots": 2,
+  "total_slots": 10
+}

@@ -1,0 +1,19 @@
+pathA_nerf — RADIO LINK FAILURE at --snr 30 (excluded from multiplot)
+
+Result: snr.txt is empty (gNB logged zero UL MCS). Reproduced twice.
+
+Cause (channel 20261009/channel_nerf_A.txt, not a software fault):
+  UE attaches at a marginal 0.55 dB SNR, then before a stable UL session is
+  established the trace fades for ~15 s down to -19 dB SNR (min tap 0.003566
+  at ~43 s into motion), far below the UL decode threshold. The link drops
+  (RLF) and no UL MCS is ever logged. iperf_ul shows bogus ~32 Gbit/s (no real
+  data traversed the radio); iperf_dl is empty.
+
+SNR profile: 0.55 dB (attach) -> 6.6 dB (+10s) -> -9 dB (+30s) -> -19 dB (+43s)
+             -> recovers to ~0 dB (+50s) -> 5-8 dB after.
+Contrast: pathB_nerf has the same 0.55 dB start but climbs to ~12 dB and holds,
+so it ran fine.
+
+To make nerf_A produce data, either raise the SNR anchor (e.g. --snr 35) for
+all scenarios, or regenerate nerf_A with a strong warmup hold so attach always
+completes (then the mid-run blackout just shows as a gap, not an empty log).

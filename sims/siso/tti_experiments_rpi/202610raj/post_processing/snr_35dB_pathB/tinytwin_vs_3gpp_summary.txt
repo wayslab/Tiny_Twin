@@ -1,0 +1,11 @@
+TinyTwin vs 3GPP naive - Path B GT - 35 dB (UDP)
+B = 38.16 MHz  (106 PRB x 12 x 30 kHz)
+alpha = 0.4   f_UL = 0.200 (7D1S2U = 2/10)
+3GPP model: tput = alpha * B * f_UL * log2(1 + 10^(SNR/10))
+sync/attach TTI X = 10152  (pre-X attach phase excluded; iperf-time 0 <-> TTI X)
+
+mean PUSCH SNR            : 22.6 dB
+3GPP naive  mean (all)    : 22.95 Mbps
+TinyTwin    mean (all)    : 19.73 Mbps
+3GPP naive  mean (60-200s): 20.20 Mbps
+TinyTwin    mean (60-200s): 18.63 Mbps

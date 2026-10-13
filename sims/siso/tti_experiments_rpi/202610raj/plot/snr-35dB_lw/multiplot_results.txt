@@ -1,0 +1,90 @@
+{
+  "title": "202610raj UL \u2014 AI53_017 (--snr 35, full-coverage)",
+  "note": "iperf received goodput; total_MB = integral of per-second rate",
+  "channels": {
+    "Path A GT": {
+      "ul": {
+        "mean_kbps": 4163.9,
+        "peak_kbps": 38876.0,
+        "total_MB": 158.75,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 292.2,
+        "peak_kbps": 1105.0,
+        "total_MB": 10.99,
+        "duration_s": 301.0
+      }
+    },
+    "Path A 2NN": {
+      "ul": {
+        "mean_kbps": 4727.1,
+        "peak_kbps": 43782.0,
+        "total_MB": 180.22,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 343.5,
+        "peak_kbps": 1105.0,
+        "total_MB": 12.92,
+        "duration_s": 301.0
+      }
+    },
+    "Path A NeRF": {
+      "ul": {
+        "mean_kbps": 3018.9,
+        "peak_kbps": 42610.0,
+        "total_MB": 115.09,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 558.3,
+        "peak_kbps": 1094.0,
+        "total_MB": 7.26,
+        "duration_s": 104.0
+      }
+    },
+    "Path B GT": {
+      "ul": {
+        "mean_kbps": 1713.5,
+        "peak_kbps": 43702.0,
+        "total_MB": 65.33,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 111.2,
+        "peak_kbps": 1070.0,
+        "total_MB": 4.17,
+        "duration_s": 300.0
+      }
+    },
+    "Path B 2NN": {
+      "ul": {
+        "mean_kbps": 19500.7,
+        "peak_kbps": 44072.0,
+        "total_MB": 743.47,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.4,
+        "peak_kbps": 1129.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path B NeRF": {
+      "ul": {
+        "mean_kbps": 18447.8,
+        "peak_kbps": 41686.0,
+        "total_MB": 703.32,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.4,
+        "peak_kbps": 1082.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    }
+  }
+}

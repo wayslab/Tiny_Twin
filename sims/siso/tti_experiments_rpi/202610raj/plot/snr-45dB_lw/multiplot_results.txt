@@ -1,0 +1,90 @@
+{
+  "title": "202610raj UL \u2014 AI53_017 (--snr 45, full-coverage)",
+  "note": "iperf received goodput; total_MB = integral of per-second rate",
+  "channels": {
+    "Path A GT": {
+      "ul": {
+        "mean_kbps": 19719.0,
+        "peak_kbps": 45722.0,
+        "total_MB": 751.79,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.3,
+        "peak_kbps": 1117.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path A 2NN": {
+      "ul": {
+        "mean_kbps": 18816.6,
+        "peak_kbps": 43603.0,
+        "total_MB": 717.38,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.3,
+        "peak_kbps": 1129.0,
+        "total_MB": 39.4,
+        "duration_s": 301.0
+      }
+    },
+    "Path A NeRF": {
+      "ul": {
+        "mean_kbps": 7009.8,
+        "peak_kbps": 42774.0,
+        "total_MB": 267.25,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1044.7,
+        "peak_kbps": 1117.0,
+        "total_MB": 13.19,
+        "duration_s": 101.0
+      }
+    },
+    "Path B GT": {
+      "ul": {
+        "mean_kbps": 22660.5,
+        "peak_kbps": 45253.0,
+        "total_MB": 863.93,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.6,
+        "peak_kbps": 1058.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path B 2NN": {
+      "ul": {
+        "mean_kbps": 22801.7,
+        "peak_kbps": 43296.0,
+        "total_MB": 869.32,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.4,
+        "peak_kbps": 1070.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path B NeRF": {
+      "ul": {
+        "mean_kbps": 22521.5,
+        "peak_kbps": 46069.0,
+        "total_MB": 858.63,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.3,
+        "peak_kbps": 1082.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    }
+  }
+}

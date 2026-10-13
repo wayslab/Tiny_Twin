@@ -1,0 +1,14 @@
+Fusion (residual-corrected ensemble) - metric = throughput (Mbps)
+model: GT_hat = w1*2NN + w2*NeRF + b
+train window = 90-115 s  (n=26)
+test  window = 115-200 s  (n=86)
+
+  w1 (2NN)  = -0.1187
+  w2 (NeRF) = -0.1817
+  b         = +21.8533
+
+TEST errors (Mbps):
+  fused : RMSE=6.928  MAE=5.898
+  2NN   : RMSE=6.602  MAE=4.527
+  NeRF  : RMSE=6.103  MAE=4.527
+  fused vs best single: -13.5% RMSE

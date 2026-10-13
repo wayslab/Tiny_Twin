@@ -1,0 +1,90 @@
+{
+  "title": "202610raj UL metrics \u2014 AI53_017 path A/B gt/2nn/nerf (--snr 45)",
+  "note": "iperf received goodput; total_MB = integral of per-second rate",
+  "channels": {
+    "Path A GT": {
+      "ul": {
+        "mean_kbps": 20617.9,
+        "peak_kbps": 28130.0,
+        "total_MB": 786.06,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.3,
+        "peak_kbps": 1082.0,
+        "total_MB": 39.4,
+        "duration_s": 301.0
+      }
+    },
+    "Path A 2NN": {
+      "ul": {
+        "mean_kbps": 19296.4,
+        "peak_kbps": 28036.0,
+        "total_MB": 745.32,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.4,
+        "peak_kbps": 1117.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path A NeRF": {
+      "ul": {
+        "mean_kbps": 4416.3,
+        "peak_kbps": 28130.0,
+        "total_MB": 279.88,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1039.8,
+        "peak_kbps": 1094.0,
+        "total_MB": 13.26,
+        "duration_s": 102.0
+      }
+    },
+    "Path B GT": {
+      "ul": {
+        "mean_kbps": 23077.2,
+        "peak_kbps": 28459.0,
+        "total_MB": 891.36,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.4,
+        "peak_kbps": 1105.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path B 2NN": {
+      "ul": {
+        "mean_kbps": 23321.7,
+        "peak_kbps": 28424.0,
+        "total_MB": 900.8,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.3,
+        "peak_kbps": 1070.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    },
+    "Path B NeRF": {
+      "ul": {
+        "mean_kbps": 22982.3,
+        "peak_kbps": 28753.0,
+        "total_MB": 887.69,
+        "duration_s": 305.0
+      },
+      "dl": {
+        "mean_kbps": 1047.4,
+        "peak_kbps": 1070.0,
+        "total_MB": 39.41,
+        "duration_s": 301.0
+      }
+    }
+  }
+}

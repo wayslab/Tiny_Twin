@@ -1,0 +1,31 @@
+{
+  "_runcmd": "cd /home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi && python3 multiplot.py 202610raj/plot/<outdir>/multiplot.json",
+  "title": "202610raj UL metrics \u2014 AI53_017 path A/B gt/2nn/nerf (--snr 30)",
+  "out": "multiplot.png",
+  "traces": [
+    {
+      "path": "pathA_gt/snr.txt",
+      "label": "Path A GT"
+    },
+    {
+      "path": "pathA_2nn/snr.txt",
+      "label": "Path A 2NN"
+    },
+    {
+      "path": "pathA_nerf/snr.txt",
+      "label": "Path A NeRF"
+    },
+    {
+      "path": "pathB_gt/snr.txt",
+      "label": "Path B GT"
+    },
+    {
+      "path": "pathB_2nn/snr.txt",
+      "label": "Path B 2NN"
+    },
+    {
+      "path": "pathB_nerf/snr.txt",
+      "label": "Path B NeRF"
+    }
+  ]
+}

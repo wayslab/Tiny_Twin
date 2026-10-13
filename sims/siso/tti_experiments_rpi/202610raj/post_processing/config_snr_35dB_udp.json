@@ -1,0 +1,15 @@
+{
+  "base_dir": "/home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/202610raj/plot/snr-35dB_udp",
+  "output_dir": "/home/ways_lab/repos/Tiny_Twin/sims/siso/tti_experiments_rpi/202610raj/post_processing/snr_35dB_udp",
+  "title": "202610raj UL - AI53_017 - 35 dB (all UDP 50M)",
+  "tpt_smooth": 100,
+  "throughput_window_s": [60, 200],
+  "scenarios": [
+    {"folder": "pathA_gt",   "label": "Path A GT"},
+    {"folder": "pathA_2nn",  "label": "Path A 2NN"},
+    {"folder": "pathA_nerf", "label": "Path A NeRF"},
+    {"folder": "pathB_gt",   "label": "Path B GT"},
+    {"folder": "pathB_2nn",  "label": "Path B 2NN"},
+    {"folder": "pathB_nerf", "label": "Path B NeRF"}
+  ]
+}
