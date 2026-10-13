@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <vector>
 #include <tuple>
 #include <zmq.hpp>
 #include <optional>
@@ -28,6 +29,18 @@ private:
     static std::map<uint16_t, uint32_t> ue_ul_buffers;
     static std::map<uint16_t, uint32_t> ue_dl_buffers;
     static std::map<uint16_t, float> dl_tbs_ues;
+    // MIMO-RIC: per-antenna UL channel measurement (downsampled), flattened [rx][sc] as re,im
+    static std::map<uint16_t, std::vector<float>> ue_channel;
+    static std::map<uint16_t, uint32_t> ue_channel_nrx;
+    static std::map<uint16_t, uint32_t> ue_channel_nsc;
+    // MIMO-RIC: raw LS (pre-filter) per-antenna UL channel, same flattening as ue_channel
+    static std::map<uint16_t, std::vector<float>> ue_channel_ls;
+    static std::map<uint16_t, uint32_t> ue_channel_ls_nrx;
+    static std::map<uint16_t, uint32_t> ue_channel_ls_nsc;
+    // SRS-RIC: per-antenna UL channel from the SRS codebook IQ matrix, [gnb_rx][prg] re,im
+    static std::map<uint16_t, std::vector<float>> ue_srs_channel;
+    static std::map<uint16_t, uint32_t> ue_srs_channel_nrx;
+    static std::map<uint16_t, uint32_t> ue_srs_channel_nsc;
 
     static uint32_t er_ran_index_weights;
     static uint32_t er_ran_index_mcs;
@@ -51,6 +64,18 @@ public:
     static void set_tx_bytes(uint16_t rnti, float tbs) {tx_bytes[rnti] += tbs;} // ue_dl_buffers[rnti] -= tbs; }
     static void set_rx_bytes(uint16_t rnti, float tbs) {rx_bytes[rnti] += tbs;} // ue_ul_buffers[rnti] -= tbs;}
     static void set_dl_tbs(uint16_t rnti, float tbs) {dl_tbs_ues[rnti] = tbs;}  
+    // MIMO-RIC: store a downsampled per-antenna UL channel snapshot for this UE
+    static void set_channel(uint16_t rnti, const std::vector<float>& ch, uint32_t nrx, uint32_t nsc) {
+        ue_channel[rnti] = ch; ue_channel_nrx[rnti] = nrx; ue_channel_nsc[rnti] = nsc;
+    }
+    // MIMO-RIC: store the raw LS (pre-filter) per-antenna UL channel snapshot for this UE
+    static void set_channel_ls(uint16_t rnti, const std::vector<float>& ch, uint32_t nrx, uint32_t nsc) {
+        ue_channel_ls[rnti] = ch; ue_channel_ls_nrx[rnti] = nrx; ue_channel_ls_nsc[rnti] = nsc;
+    }
+    // SRS-RIC: store the per-antenna SRS codebook channel snapshot for this UE
+    static void set_srs_channel(uint16_t rnti, const std::vector<float>& ch, uint32_t nrx, uint32_t nsc) {
+        ue_srs_channel[rnti] = ch; ue_srs_channel_nrx[rnti] = nrx; ue_srs_channel_nsc[rnti] = nsc;
+    }
     //////////////////////////////////// ZMQ function to send RT-E2 Report 
     static void send_to_er();
     

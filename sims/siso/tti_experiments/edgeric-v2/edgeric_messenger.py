@@ -54,7 +54,10 @@ class EdgericMessenger:
                 "rx_bytes": ue_metrics.rx_bytes,
                 "dl_buffer": ue_metrics.dl_buffer,
                 "ul_buffer": ue_metrics.ul_buffer,
-                "dl_tbs": ue_metrics.dl_tbs
+                "dl_tbs": ue_metrics.dl_tbs,
+                "ul_channel": list(ue_metrics.ul_channel),        # MIMO-RIC per-antenna channel
+                "ul_channel_nrx": ue_metrics.ul_channel_nrx,
+                "ul_channel_nsc": ue_metrics.ul_channel_nsc
             } for ue_metrics in metrics.ue_metrics}
 
             # Print the TTI count and UE metrics dictionary for debugging
@@ -62,6 +65,13 @@ class EdgericMessenger:
                 print("RT-E2 Report: \n")
                 print(f"TTI Count: {self.ran_tti}")
                 print(f"UE Metrics: {self.ue_dict}")
+
+            self._chc = getattr(self, "_chc", 0) + 1
+            if self._chc % 500 == 0:
+                for _rnti, _m in self.ue_dict.items():
+                    if _m.get("ul_channel"):
+                        print(f"[MIMO-RIC] channel rx rnti={_rnti}: {len(_m['ul_channel'])} floats "
+                              f"({_m['ul_channel_nrx']} rx x {_m['ul_channel_nsc']} sc x re,im)", flush=True)
 
         except KeyboardInterrupt:
             print("Interrupted")

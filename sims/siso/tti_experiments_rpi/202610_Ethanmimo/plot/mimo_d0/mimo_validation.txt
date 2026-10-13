@@ -1,0 +1,13 @@
+INPUT : theta=30.0 deg, delay D=0 samples, nant=4
+CAPTURE: 200 snapshots, nrx=4, nsc=60, tag=L
+
+per-antenna INTER-ANTENNA PHASE offset (deg), relative to antenna 0:
+  ant      input    extracted     error   |H|in   |H|ext
+    0       0.00         0.00      0.00   1.000    1.000
+    1      90.00        90.06      0.06   1.000    1.000
+    2     180.00      -179.93      0.07   1.000    1.001
+    3     270.00       -89.99      0.01   1.000    1.001
+
+DELAY ramp (antenna 0): slope=-0.020374 rad/sc -> D_est=4.98 samples (input D=0, Nfft=1536)
+
+VERDICT: CHECK  (max phase err 0.07 deg, delay err 4.98 samples)

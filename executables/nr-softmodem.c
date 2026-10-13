@@ -132,6 +132,11 @@ extern int tti_counter;
 FILE *fplog2;
 FILE *fpi[50];
 FILE *fpr[50];
+// jammer tap handles (declared so apply_channelmod.c's externs resolve). The gNB
+// deliberately leaves these NULL: it never applies the channel/jammer (gnb1_ue0==1),
+// and opening 100 extra fds would push the rfsim socket fd past MAX_FD_RFSIMU.
+FILE *fpr_jam[50];
+FILE *fpi_jam[50];
 FILE *fplog;
 FILE *fplog3;
 FILE *fplog4;
@@ -662,9 +667,14 @@ int main( int argc, char **argv ) {
   // METAL VERSIONS //
   // fpr = fopen("../../../channel/real_random_10tap.txt", "r");
   // fpi = fopen("../../../channel/real_random_10tap.txt", "r");
+  // UL MIMO (dev/mimo): the gNB's fpr/fpi are used ONLY for the uplink receive
+  // (gNB rx). Point them at a DEDICATED per-rx-antenna UL channel file so the UL
+  // MIMO channel is independent of the DL channel (channel_real.txt, read by the
+  // UE). Format: nb_rx lines per TTI, each line = nb_tx*taplen complex taps.
+  // Falls back harmlessly (NULL handles -> old memcpy path) if the file is absent.
   for (int i=0;i<50;i++){
-    fpr[i] = fopen("../../../channel/channel_real.txt", "r");   // real taps
-    fpi[i] = fopen("../../../channel/channel_imag.txt", "r");    // imag taps (separate file)
+    fpr[i] = fopen("../../../channel/channel_mimo_real.txt", "r");   // UL per-rx-antenna real taps
+    fpi[i] = fopen("../../../channel/channel_mimo_imag.txt", "r");   // UL per-rx-antenna imag taps
   }
   // fplog = fopen("../../../logs/timing.txt", "w"); // file the data from the timing array is written to
   // fplog2 = fopen("../../../logs/mac.txt", "w"); // when did a TTI start 

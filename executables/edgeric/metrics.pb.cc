@@ -22,7 +22,10 @@ namespace _pbi = _pb::internal;
 
 PROTOBUF_CONSTEXPR UeMetrics::UeMetrics(
     ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.rnti_)*/0u
+    /*decltype(_impl_.ul_channel_)*/{}
+  , /*decltype(_impl_.ul_channel_ls_)*/{}
+  , /*decltype(_impl_.srs_channel_)*/{}
+  , /*decltype(_impl_.rnti_)*/0u
   , /*decltype(_impl_.cqi_)*/0u
   , /*decltype(_impl_.snr_)*/0
   , /*decltype(_impl_.tx_bytes_)*/0
@@ -30,6 +33,12 @@ PROTOBUF_CONSTEXPR UeMetrics::UeMetrics(
   , /*decltype(_impl_.dl_buffer_)*/0u
   , /*decltype(_impl_.ul_buffer_)*/0u
   , /*decltype(_impl_.dl_tbs_)*/0
+  , /*decltype(_impl_.ul_channel_nrx_)*/0u
+  , /*decltype(_impl_.ul_channel_nsc_)*/0u
+  , /*decltype(_impl_.ul_channel_ls_nrx_)*/0u
+  , /*decltype(_impl_.ul_channel_ls_nsc_)*/0u
+  , /*decltype(_impl_.srs_channel_nrx_)*/0u
+  , /*decltype(_impl_.srs_channel_nsc_)*/0u
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct UeMetricsDefaultTypeInternal {
   PROTOBUF_CONSTEXPR UeMetricsDefaultTypeInternal()
@@ -73,6 +82,15 @@ const uint32_t TableStruct_metrics_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
   PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.dl_buffer_),
   PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.ul_buffer_),
   PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.dl_tbs_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.ul_channel_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.ul_channel_nrx_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.ul_channel_nsc_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.ul_channel_ls_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.ul_channel_ls_nrx_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.ul_channel_ls_nsc_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.srs_channel_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.srs_channel_nrx_),
+  PROTOBUF_FIELD_OFFSET(::UeMetrics, _impl_.srs_channel_nsc_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Metrics, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -84,7 +102,7 @@ const uint32_t TableStruct_metrics_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::UeMetrics)},
-  { 14, -1, -1, sizeof(::Metrics)},
+  { 23, -1, -1, sizeof(::Metrics)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -93,16 +111,22 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 
 const char descriptor_table_protodef_metrics_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\rmetrics.proto\"\215\001\n\tUeMetrics\022\014\n\004rnti\030\001 "
+  "\n\rmetrics.proto\"\345\002\n\tUeMetrics\022\014\n\004rnti\030\001 "
   "\001(\r\022\013\n\003cqi\030\002 \001(\r\022\013\n\003snr\030\003 \001(\002\022\020\n\010tx_byte"
   "s\030\004 \001(\002\022\020\n\010rx_bytes\030\005 \001(\002\022\021\n\tdl_buffer\030\006"
-  " \001(\r\022\021\n\tul_buffer\030\007 \001(\r\022\016\n\006dl_tbs\030\010 \001(\002\""
-  ":\n\007Metrics\022\017\n\007tti_cnt\030\001 \001(\r\022\036\n\nue_metric"
-  "s\030\002 \003(\0132\n.UeMetricsb\006proto3"
+  " \001(\r\022\021\n\tul_buffer\030\007 \001(\r\022\016\n\006dl_tbs\030\010 \001(\002\022"
+  "\022\n\nul_channel\030\t \003(\002\022\026\n\016ul_channel_nrx\030\n "
+  "\001(\r\022\026\n\016ul_channel_nsc\030\013 \001(\r\022\025\n\rul_channe"
+  "l_ls\030\014 \003(\002\022\031\n\021ul_channel_ls_nrx\030\r \001(\r\022\031\n"
+  "\021ul_channel_ls_nsc\030\016 \001(\r\022\023\n\013srs_channel\030"
+  "\017 \003(\002\022\027\n\017srs_channel_nrx\030\020 \001(\r\022\027\n\017srs_ch"
+  "annel_nsc\030\021 \001(\r\":\n\007Metrics\022\017\n\007tti_cnt\030\001 "
+  "\001(\r\022\036\n\nue_metrics\030\002 \003(\0132\n.UeMetricsb\006pro"
+  "to3"
   ;
 static ::_pbi::once_flag descriptor_table_metrics_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_metrics_2eproto = {
-    false, false, 227, descriptor_table_protodef_metrics_2eproto,
+    false, false, 443, descriptor_table_protodef_metrics_2eproto,
     "metrics.proto",
     &descriptor_table_metrics_2eproto_once, nullptr, 0, 2,
     schemas, file_default_instances, TableStruct_metrics_2eproto::offsets,
@@ -132,7 +156,10 @@ UeMetrics::UeMetrics(const UeMetrics& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
   UeMetrics* const _this = this; (void)_this;
   new (&_impl_) Impl_{
-      decltype(_impl_.rnti_){}
+      decltype(_impl_.ul_channel_){from._impl_.ul_channel_}
+    , decltype(_impl_.ul_channel_ls_){from._impl_.ul_channel_ls_}
+    , decltype(_impl_.srs_channel_){from._impl_.srs_channel_}
+    , decltype(_impl_.rnti_){}
     , decltype(_impl_.cqi_){}
     , decltype(_impl_.snr_){}
     , decltype(_impl_.tx_bytes_){}
@@ -140,12 +167,18 @@ UeMetrics::UeMetrics(const UeMetrics& from)
     , decltype(_impl_.dl_buffer_){}
     , decltype(_impl_.ul_buffer_){}
     , decltype(_impl_.dl_tbs_){}
+    , decltype(_impl_.ul_channel_nrx_){}
+    , decltype(_impl_.ul_channel_nsc_){}
+    , decltype(_impl_.ul_channel_ls_nrx_){}
+    , decltype(_impl_.ul_channel_ls_nsc_){}
+    , decltype(_impl_.srs_channel_nrx_){}
+    , decltype(_impl_.srs_channel_nsc_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&_impl_.rnti_, &from._impl_.rnti_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.dl_tbs_) -
-    reinterpret_cast<char*>(&_impl_.rnti_)) + sizeof(_impl_.dl_tbs_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.srs_channel_nsc_) -
+    reinterpret_cast<char*>(&_impl_.rnti_)) + sizeof(_impl_.srs_channel_nsc_));
   // @@protoc_insertion_point(copy_constructor:UeMetrics)
 }
 
@@ -154,7 +187,10 @@ inline void UeMetrics::SharedCtor(
   (void)arena;
   (void)is_message_owned;
   new (&_impl_) Impl_{
-      decltype(_impl_.rnti_){0u}
+      decltype(_impl_.ul_channel_){arena}
+    , decltype(_impl_.ul_channel_ls_){arena}
+    , decltype(_impl_.srs_channel_){arena}
+    , decltype(_impl_.rnti_){0u}
     , decltype(_impl_.cqi_){0u}
     , decltype(_impl_.snr_){0}
     , decltype(_impl_.tx_bytes_){0}
@@ -162,6 +198,12 @@ inline void UeMetrics::SharedCtor(
     , decltype(_impl_.dl_buffer_){0u}
     , decltype(_impl_.ul_buffer_){0u}
     , decltype(_impl_.dl_tbs_){0}
+    , decltype(_impl_.ul_channel_nrx_){0u}
+    , decltype(_impl_.ul_channel_nsc_){0u}
+    , decltype(_impl_.ul_channel_ls_nrx_){0u}
+    , decltype(_impl_.ul_channel_ls_nsc_){0u}
+    , decltype(_impl_.srs_channel_nrx_){0u}
+    , decltype(_impl_.srs_channel_nsc_){0u}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -177,6 +219,9 @@ UeMetrics::~UeMetrics() {
 
 inline void UeMetrics::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.ul_channel_.~RepeatedField();
+  _impl_.ul_channel_ls_.~RepeatedField();
+  _impl_.srs_channel_.~RepeatedField();
 }
 
 void UeMetrics::SetCachedSize(int size) const {
@@ -189,9 +234,12 @@ void UeMetrics::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  _impl_.ul_channel_.Clear();
+  _impl_.ul_channel_ls_.Clear();
+  _impl_.srs_channel_.Clear();
   ::memset(&_impl_.rnti_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.dl_tbs_) -
-      reinterpret_cast<char*>(&_impl_.rnti_)) + sizeof(_impl_.dl_tbs_));
+      reinterpret_cast<char*>(&_impl_.srs_channel_nsc_) -
+      reinterpret_cast<char*>(&_impl_.rnti_)) + sizeof(_impl_.srs_channel_nsc_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -262,6 +310,87 @@ const char* UeMetrics::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 69)) {
           _impl_.dl_tbs_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated float ul_channel = 9;
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 74)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedFloatParser(_internal_mutable_ul_channel(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<uint8_t>(tag) == 77) {
+          _internal_add_ul_channel(::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr));
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 ul_channel_nrx = 10;
+      case 10:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 80)) {
+          _impl_.ul_channel_nrx_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 ul_channel_nsc = 11;
+      case 11:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 88)) {
+          _impl_.ul_channel_nsc_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated float ul_channel_ls = 12;
+      case 12:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 98)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedFloatParser(_internal_mutable_ul_channel_ls(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<uint8_t>(tag) == 101) {
+          _internal_add_ul_channel_ls(::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr));
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 ul_channel_ls_nrx = 13;
+      case 13:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 104)) {
+          _impl_.ul_channel_ls_nrx_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 ul_channel_ls_nsc = 14;
+      case 14:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 112)) {
+          _impl_.ul_channel_ls_nsc_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated float srs_channel = 15;
+      case 15:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 122)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::PackedFloatParser(_internal_mutable_srs_channel(), ptr, ctx);
+          CHK_(ptr);
+        } else if (static_cast<uint8_t>(tag) == 125) {
+          _internal_add_srs_channel(::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr));
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 srs_channel_nrx = 16;
+      case 16:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 128)) {
+          _impl_.srs_channel_nrx_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // uint32 srs_channel_nsc = 17;
+      case 17:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 136)) {
+          _impl_.srs_channel_nsc_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
@@ -358,6 +487,57 @@ uint8_t* UeMetrics::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteFloatToArray(8, this->_internal_dl_tbs(), target);
   }
 
+  // repeated float ul_channel = 9;
+  if (this->_internal_ul_channel_size() > 0) {
+    target = stream->WriteFixedPacked(9, _internal_ul_channel(), target);
+  }
+
+  // uint32 ul_channel_nrx = 10;
+  if (this->_internal_ul_channel_nrx() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(10, this->_internal_ul_channel_nrx(), target);
+  }
+
+  // uint32 ul_channel_nsc = 11;
+  if (this->_internal_ul_channel_nsc() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(11, this->_internal_ul_channel_nsc(), target);
+  }
+
+  // repeated float ul_channel_ls = 12;
+  if (this->_internal_ul_channel_ls_size() > 0) {
+    target = stream->WriteFixedPacked(12, _internal_ul_channel_ls(), target);
+  }
+
+  // uint32 ul_channel_ls_nrx = 13;
+  if (this->_internal_ul_channel_ls_nrx() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(13, this->_internal_ul_channel_ls_nrx(), target);
+  }
+
+  // uint32 ul_channel_ls_nsc = 14;
+  if (this->_internal_ul_channel_ls_nsc() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(14, this->_internal_ul_channel_ls_nsc(), target);
+  }
+
+  // repeated float srs_channel = 15;
+  if (this->_internal_srs_channel_size() > 0) {
+    target = stream->WriteFixedPacked(15, _internal_srs_channel(), target);
+  }
+
+  // uint32 srs_channel_nrx = 16;
+  if (this->_internal_srs_channel_nrx() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(16, this->_internal_srs_channel_nrx(), target);
+  }
+
+  // uint32 srs_channel_nsc = 17;
+  if (this->_internal_srs_channel_nsc() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(17, this->_internal_srs_channel_nsc(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -373,6 +553,39 @@ size_t UeMetrics::ByteSizeLong() const {
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
+
+  // repeated float ul_channel = 9;
+  {
+    unsigned int count = static_cast<unsigned int>(this->_internal_ul_channel_size());
+    size_t data_size = 4UL * count;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
+    }
+    total_size += data_size;
+  }
+
+  // repeated float ul_channel_ls = 12;
+  {
+    unsigned int count = static_cast<unsigned int>(this->_internal_ul_channel_ls_size());
+    size_t data_size = 4UL * count;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
+    }
+    total_size += data_size;
+  }
+
+  // repeated float srs_channel = 15;
+  {
+    unsigned int count = static_cast<unsigned int>(this->_internal_srs_channel_size());
+    size_t data_size = 4UL * count;
+    if (data_size > 0) {
+      total_size += 1 +
+        ::_pbi::WireFormatLite::Int32Size(static_cast<int32_t>(data_size));
+    }
+    total_size += data_size;
+  }
 
   // uint32 rnti = 1;
   if (this->_internal_rnti() != 0) {
@@ -430,6 +643,40 @@ size_t UeMetrics::ByteSizeLong() const {
     total_size += 1 + 4;
   }
 
+  // uint32 ul_channel_nrx = 10;
+  if (this->_internal_ul_channel_nrx() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_ul_channel_nrx());
+  }
+
+  // uint32 ul_channel_nsc = 11;
+  if (this->_internal_ul_channel_nsc() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_ul_channel_nsc());
+  }
+
+  // uint32 ul_channel_ls_nrx = 13;
+  if (this->_internal_ul_channel_ls_nrx() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_ul_channel_ls_nrx());
+  }
+
+  // uint32 ul_channel_ls_nsc = 14;
+  if (this->_internal_ul_channel_ls_nsc() != 0) {
+    total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(this->_internal_ul_channel_ls_nsc());
+  }
+
+  // uint32 srs_channel_nrx = 16;
+  if (this->_internal_srs_channel_nrx() != 0) {
+    total_size += 2 +
+      ::_pbi::WireFormatLite::UInt32Size(
+        this->_internal_srs_channel_nrx());
+  }
+
+  // uint32 srs_channel_nsc = 17;
+  if (this->_internal_srs_channel_nsc() != 0) {
+    total_size += 2 +
+      ::_pbi::WireFormatLite::UInt32Size(
+        this->_internal_srs_channel_nsc());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -448,6 +695,9 @@ void UeMetrics::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
+  _this->_impl_.ul_channel_.MergeFrom(from._impl_.ul_channel_);
+  _this->_impl_.ul_channel_ls_.MergeFrom(from._impl_.ul_channel_ls_);
+  _this->_impl_.srs_channel_.MergeFrom(from._impl_.srs_channel_);
   if (from._internal_rnti() != 0) {
     _this->_internal_set_rnti(from._internal_rnti());
   }
@@ -488,6 +738,24 @@ void UeMetrics::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROT
   if (raw_dl_tbs != 0) {
     _this->_internal_set_dl_tbs(from._internal_dl_tbs());
   }
+  if (from._internal_ul_channel_nrx() != 0) {
+    _this->_internal_set_ul_channel_nrx(from._internal_ul_channel_nrx());
+  }
+  if (from._internal_ul_channel_nsc() != 0) {
+    _this->_internal_set_ul_channel_nsc(from._internal_ul_channel_nsc());
+  }
+  if (from._internal_ul_channel_ls_nrx() != 0) {
+    _this->_internal_set_ul_channel_ls_nrx(from._internal_ul_channel_ls_nrx());
+  }
+  if (from._internal_ul_channel_ls_nsc() != 0) {
+    _this->_internal_set_ul_channel_ls_nsc(from._internal_ul_channel_ls_nsc());
+  }
+  if (from._internal_srs_channel_nrx() != 0) {
+    _this->_internal_set_srs_channel_nrx(from._internal_srs_channel_nrx());
+  }
+  if (from._internal_srs_channel_nsc() != 0) {
+    _this->_internal_set_srs_channel_nsc(from._internal_srs_channel_nsc());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -505,9 +773,12 @@ bool UeMetrics::IsInitialized() const {
 void UeMetrics::InternalSwap(UeMetrics* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.ul_channel_.InternalSwap(&other->_impl_.ul_channel_);
+  _impl_.ul_channel_ls_.InternalSwap(&other->_impl_.ul_channel_ls_);
+  _impl_.srs_channel_.InternalSwap(&other->_impl_.srs_channel_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(UeMetrics, _impl_.dl_tbs_)
-      + sizeof(UeMetrics::_impl_.dl_tbs_)
+      PROTOBUF_FIELD_OFFSET(UeMetrics, _impl_.srs_channel_nsc_)
+      + sizeof(UeMetrics::_impl_.srs_channel_nsc_)
       - PROTOBUF_FIELD_OFFSET(UeMetrics, _impl_.rnti_)>(
           reinterpret_cast<char*>(&_impl_.rnti_),
           reinterpret_cast<char*>(&other->_impl_.rnti_));

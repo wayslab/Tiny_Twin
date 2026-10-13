@@ -1475,6 +1475,32 @@ void handle_nr_srs_measurements(const module_id_t module_id,
       }
 #endif
 
+      // SRS-RIC: export the per-antenna SRS codebook channel (UE SRS port 0) to the
+      // RIC/muApp. Flatten [gnb_ant gI][prg pI] as interleaved re,im; nrx = number of
+      // gNB rx antenna elements, nsc = number of PRGs. The IQ matrix is 8-bit when
+      // normalized_iq_representation==0, else 16-bit (c16_t == int16_t[2] per sample).
+      {
+        const int nGnb = nr_srs_channel_iq_matrix.num_gnb_antenna_elements;
+        const int nPrg = nr_srs_channel_iq_matrix.num_prgs;
+        const int is8  = (nr_srs_channel_iq_matrix.normalized_iq_representation == 0);
+        const int8_t  *m8  = (const int8_t  *)nr_srs_channel_iq_matrix.channel_matrix;
+        const int16_t *m16 = (const int16_t *)nr_srs_channel_iq_matrix.channel_matrix;
+        if (agent && nGnb > 0 && nPrg > 0 && nGnb <= 8 && nPrg <= 273) {
+          float srsbuf[8 * 273 * 2];
+          int idx = 0;
+          for (int gI = 0; gI < nGnb; gI++) {
+            for (int pI = 0; pI < nPrg; pI++) {
+              const int mi = gI * nPrg + pI;         // UE SRS port 0: uI*nGnb*nPrg + ...
+              srsbuf[idx++] = is8 ? (float)m8[2 * mi]     : (float)m16[2 * mi];      // real
+              srsbuf[idx++] = is8 ? (float)m8[2 * mi + 1] : (float)m16[2 * mi + 1];  // imag
+            }
+          }
+          ric_set_srs_channel(agent, UE->rnti, srsbuf, idx, (uint32_t)nGnb, (uint32_t)nPrg);
+          LOG_I(NR_MAC, "[srs-ric] exported SRS channel rnti %04x nrx(gnb)=%d nsc(prg)=%d floats=%d is8=%d\n",
+                UE->rnti, nGnb, nPrg, idx, is8);
+        }
+      }
+
       NR_UE_sched_ctrl_t *sched_ctrl = &UE->UE_sched_ctrl;
       NR_UE_UL_BWP_t *current_BWP = &UE->current_UL_BWP;
       sched_ctrl->srs_feedback.sri = NR_SRS_SRI_0;

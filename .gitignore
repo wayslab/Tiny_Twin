@@ -32,3 +32,6 @@ __pycache__/
 *.pyc
 *.pyo
 .venv/
+
+# large rfsim channel captures (regenerate via the experiment)
+chan_cap.txt

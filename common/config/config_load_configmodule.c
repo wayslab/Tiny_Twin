@@ -57,6 +57,10 @@ extern int tti_log;
 extern FILE *fplog3;
 
 int taplen;
+// --- jammer channel knobs (noise interferer replayed through its own taps) ---
+int jam_enable = 0;      // --JAM  <0/1>   : turn the jammer on/off
+double jam_gain = 1.0;   // --JGAIN <float>: linear gain applied to the jammer output
+int jamtaplen = 64;      // --JTAP <n>     : number of jammer taps per TTI
 int snrlog = 0;
 int cqilog = 0;
 int tptlog = 0;
@@ -259,6 +263,9 @@ configmodule_interface_t *load_configmodule(int argc,
   int TPTIdx=-1;
   int TTIIdx=-1;
   int MCSIdx=-1;
+  int JAMIdx=-1;
+  int JGAINIdx=-1;
+  int JTAPIdx=-1;
   int OWoptIdx = -1;
 
   printf("CMDLINE: ");
@@ -287,6 +294,23 @@ configmodule_interface_t *load_configmodule(int argc,
     if (TAPopt == argv[i] + 2) {
       taplen = argv[i + 1] ? atoi(argv[i + 1]) : 0;
       TapsIdx = i;
+    }
+
+    // --- jammer knobs ---  (JTAP contains "TAP" at +3, so it never matches the TAP check above)
+    char *JAMopt = strstr(argv[i], "JAM");
+    if (JAMopt == argv[i] + 2) {
+      jam_enable = argv[i + 1] ? atoi(argv[i + 1]) : 0;
+      JAMIdx = i;
+    }
+    char *JGAINopt = strstr(argv[i], "JGAIN");
+    if (JGAINopt == argv[i] + 2) {
+      jam_gain = argv[i + 1] ? atof(argv[i + 1]) : 1.0;
+      JGAINIdx = i;
+    }
+    char *JTAPopt = strstr(argv[i], "JTAP");
+    if (JTAPopt == argv[i] + 2) {
+      jamtaplen = argv[i + 1] ? atoi(argv[i + 1]) : 64;
+      JTAPIdx = i;
     }
 
     // if (strcmp(&argv[i][1], "SNR") == 0 && i < (argc - 1)) {
@@ -448,7 +472,21 @@ configmodule_interface_t *load_configmodule(int argc,
     if (MCSIdx >= 0) {
       cfgptr->argv_info[MCSIdx] |= CONFIG_CMDLINEOPT_PROCESSED;
       cfgptr->argv_info[MCSIdx+1] |= CONFIG_CMDLINEOPT_PROCESSED;
-    }  
+    }
+
+    // mark jammer flags consumed so config_check_unknown_cmdlineopt() doesn't reject them
+    if (JAMIdx >= 0) {
+      cfgptr->argv_info[JAMIdx] |= CONFIG_CMDLINEOPT_PROCESSED;
+      cfgptr->argv_info[JAMIdx+1] |= CONFIG_CMDLINEOPT_PROCESSED;
+    }
+    if (JGAINIdx >= 0) {
+      cfgptr->argv_info[JGAINIdx] |= CONFIG_CMDLINEOPT_PROCESSED;
+      cfgptr->argv_info[JGAINIdx+1] |= CONFIG_CMDLINEOPT_PROCESSED;
+    }
+    if (JTAPIdx >= 0) {
+      cfgptr->argv_info[JTAPIdx] |= CONFIG_CMDLINEOPT_PROCESSED;
+      cfgptr->argv_info[JTAPIdx+1] |= CONFIG_CMDLINEOPT_PROCESSED;
+    }
 
     cfgptr->rtflags = cfgptr->rtflags | tmpflags;
     cfgptr->argc   = argc;

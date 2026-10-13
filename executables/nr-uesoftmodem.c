@@ -111,6 +111,10 @@ extern int snrlog;
 int counterr=0;
 FILE *fpr[50];
 FILE *fpi[50];
+// jammer tap handles: white-noise interferer replayed through its own per-TTI taps,
+// applied alongside the signal channel on the UE side (both DL rx and UL tx paths).
+FILE *fpr_jam[50];
+FILE *fpi_jam[50];
 FILE *fpcqi;
 FILE *fprsrp;
 FILE *fplog;
@@ -283,11 +287,19 @@ void init_openair0()
   // fpr = fopen("../../../channel/real_random_10tap.txt", "r");
   // fpi = fopen("../../../channel/real_random_10tap.txt", "r");
 
-  fpr[0] = fopen("../../../channel/channel_real.txt", "r");   // real taps
+  fpr[0] = fopen("../../../channel/channel_real.txt", "r");   // real taps (DL)
   fpi[0] = fopen("../../../channel/channel_imag.txt", "r");    // imag taps (separate file)
 
-  fpr[1] = fopen("../../../channel/channel_real.txt", "r");   // real taps
+  fpr[1] = fopen("../../../channel/channel_real.txt", "r");   // real taps (UL)
   fpi[1] = fopen("../../../channel/channel_imag.txt", "r");    // imag taps (separate file)
+
+  // jammer channel taps (real + imag), replayed alongside the signal channel.
+  // fopen returns NULL if the files are absent; apply_channelmod.c NULL-guards and
+  // only applies the jammer when --JAM 1 is set, so this is safe when unused.
+  fpr_jam[0] = fopen("../../../channel/jammer_real.txt", "r");
+  fpi_jam[0] = fopen("../../../channel/jammer_imag.txt", "r");
+  fpr_jam[1] = fopen("../../../channel/jammer_real.txt", "r");
+  fpi_jam[1] = fopen("../../../channel/jammer_imag.txt", "r");
 
   // if (snrlog){
     // fpsnr = fopen("../../../logs/snr.txt", "w"); // file the SNR is written to

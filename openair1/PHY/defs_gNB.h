@@ -302,6 +302,10 @@ typedef struct {
   /// - first index: rx antenna id [0..nb_antennas_rx[
   /// - second index: ? [0..12*N_RB_UL*frame_parms->symbols_per_tti[
   int32_t **ul_ch_estimates;
+  /// \brief MIMO-RIC: raw LS (pre-interpolation-filter) freq-domain estimate for export.
+  /// Same [rx antenna][freq sample] layout as ul_ch_estimates, allocation-local (no symbol
+  /// offset). Captured for layer 0 in nr_pusch_channel_estimation before the smoothing filter.
+  int32_t **ul_ls_est_ric;
   /// \brief Holds the compensated signal.
   /// - first index: rx antenna id [0..nb_antennas_rx[
   /// - second index: ? [0..12*N_RB_UL*frame_parms->symbols_per_tti[
